@@ -1,0 +1,90 @@
+<?php
+
+namespace DummyNamespace;
+
+use Illuminate\Http\Request;
+use Larfree\Support\Controller;
+use App\Repositories\NamespaceDummyRepository;
+
+class DummyClass extends Controller
+{
+    protected $validator = [
+        'login' => [
+            'rules' => [
+                //
+            ],
+            'messages' => [
+                //
+            ],
+        ],
+        'update' => [
+            'rules' => [
+                //
+            ],
+            'messages' => [
+                //
+            ],
+        ],
+    ];
+
+    public function __construct(DummyRepository $repository)
+    {
+        $this->repository = $repository;
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator|\Illuminate\Database\Eloquent\Collection
+     * @throws
+     */
+    public function index(Request $request)
+    {
+        return $this->repository->paginate($request->get('per-page'));
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return \Larfree\Support\Model
+     * @throws
+     */
+    public function store(Request $request)
+    {
+        return $this->repository->create($request->all());
+    }
+
+    /**
+     * @param int $id
+     *
+     * @return \Larfree\Support\Model
+     * @throws
+     */
+    public function show(int $id)
+    {
+        return $this->repository->find($id);
+    }
+
+    /**
+     * @param Request $request
+     * @param int     $id
+     *
+     * @return \Larfree\Support\Model
+     * @throws
+     */
+    public function update(Request $request, int $id)
+    {
+        return $this->repository->setModel($this->repository->find($id))->save($request->all());
+    }
+
+    /**
+     * @param int $id
+     *
+     * @return \Larfree\Support\Model
+     * @throws
+     */
+    public function destroy(int $id)
+    {
+        return $this->repository->delete($id);
+    }
+}

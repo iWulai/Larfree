@@ -1,0 +1,101 @@
+<?php
+
+namespace Larfree\Support;
+
+class ApiResource
+{
+    protected $status;
+
+    protected $code;
+
+    protected $message;
+
+    protected $data;
+
+    protected $body = [];
+
+    public function __construct($data = null, string $message = null, int $status = ApiResponse::HTTP_OK, string $code = null)
+    {
+        $this->status = $status;
+
+        $this->code = $code ?? ApiResponse::$statusTexts[$this->status] ?? null;
+
+        $this->data = $data;
+
+        $this->message = $message;
+    }
+
+    public function setStatus(int $status)
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    public function setCode(string $code)
+    {
+        $this->code = $code;
+
+        return $this;
+    }
+
+    public function getCode()
+    {
+        return $this->code;
+    }
+
+    public function setData($data)
+    {
+        $this->data = $data;
+
+        return $this;
+    }
+
+    public function addData(string $key, $value)
+    {
+        $this->data[$key] = $value;
+
+        return $this;
+    }
+
+    public function appendData($value)
+    {
+        $this->data[] = $value;
+
+        return $this;
+    }
+
+    public function getData()
+    {
+        return $this->data;
+    }
+
+    public function setMessage(string $message)
+    {
+        $this->message = $message;
+
+        return $this;
+    }
+
+    public function getMessage()
+    {
+        return $this->message;
+    }
+
+    public function addBody(string $key, $value)
+    {
+        $this->body[$key] = $value;
+
+        return $this;
+    }
+
+    public function getBody()
+    {
+        return array_merge(['status' => $this->status, 'code' => $this->code, 'message' => $this->message, 'data' => $this->data], $this->body);
+    }
+}

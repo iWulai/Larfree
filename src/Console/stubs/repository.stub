@@ -1,0 +1,14 @@
+<?php
+
+namespace DummyNamespace;
+
+use Larfree\Support\Repository;
+use App\Models\NamespaceDummyModel;
+
+class DummyClass extends Repository
+{
+    public function __construct(DummyModel $model)
+    {
+        $this->model = $model;
+    }
+}
