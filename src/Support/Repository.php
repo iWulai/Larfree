@@ -319,19 +319,33 @@ abstract class Repository
             {
                 if ($operator === 'in')
                 {
-                    $builder->whereIn($column, $value, $boolean);
+                    if (count($value) === 1)
+                    {
+                        $operator = '=';
+
+                        $builder->where($column, $operator, $value, $boolean);
+                    }
+                    else
+                    {
+                        $builder->whereIn($column, $value, $boolean);
+                    }
                 }
                 elseif ($operator === 'not in')
                 {
-                    $builder->whereNotIn($column, $value, $boolean);
+                    if (count($value) === 1)
+                    {
+                        $operator = '<>';
+
+                        $builder->where($column, $operator, $value, $boolean);
+                    }
+                    else
+                    {
+                        $builder->whereNotIn($column, $value, $boolean);
+                    }
                 }
-                elseif ($operator === 'between')
+                else
                 {
-                    $builder->whereBetween($column, $value, $boolean);
-                }
-                elseif ($operator === 'not between')
-                {
-                    $builder->whereNotBetween($column, $value, $boolean);
+                    $builder->where($column, $operator, $value, $boolean);
                 }
             }
             else
