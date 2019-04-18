@@ -304,7 +304,7 @@ abstract class Repository
 
         if ($withsCount)
         {
-            $builder->with($withsCount);
+            $builder->withCount($withsCount);
         }
 
         return $this;
