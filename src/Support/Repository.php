@@ -60,7 +60,7 @@ abstract class Repository
      * @param array|null $withs
      * @param array|null $withsCount
      *
-     * @return Builder[]|\Illuminate\Database\Eloquent\Collection
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function get(array $wheres = null, array $withs = null, array $withsCount = null)
     {
@@ -130,11 +130,10 @@ abstract class Repository
      *
      * @param int        $id
      * @param array|null $wheres
-     * @param array|null $append
      *
-     * @return Model
+     * @return Model|null
      */
-    public function find(int $id, array $wheres = null, array $appends = null)
+    public function find(int $id, array $wheres = null)
     {
         $builder = $this->model::query()->select($this->columns);
 
@@ -145,11 +144,9 @@ abstract class Repository
         /**
          * @var Model $model
          */
-        $model = $builder->find($id);
-
-        if ($appends)
+        if ($model = $builder->find($id))
         {
-            $model->setAppends($appends);
+            $this->model = $model;
         }
 
         return $model;
@@ -260,12 +257,21 @@ abstract class Repository
         return $this;
     }
 
-    protected function where(Builder $builder, array $wheres)
+    /**
+     * @author iwulai
+     *
+     * @param Builder|Relation $builder
+     * @param array            $wheres
+     */
+    protected function where($builder, array $wheres)
     {
         $this->beforeWhere($builder);
 
-        $builder->where(function (Builder $builder) use ($wheres)
+        $builder->where(function ($builder) use ($wheres)
             {
+                /**
+                 * @var Builder|Relation $builder
+                 */
                 foreach ($wheres as $column => $where)
                 {
                     if (is_array($where))
@@ -291,40 +297,47 @@ abstract class Repository
         $this->afterWhere($builder);
     }
 
+    /**
+     * @author iwulai
+     *
+     * @param Builder|Relation $builder
+     * @param array|null       $wheres
+     * @param array|null       $withs
+     * @param array|null       $withsCount
+     *
+     * @return $this
+     */
     protected function buildQuery($builder, array $wheres = null, array $withs = null, array $withsCount = null)
     {
-        if ($builder instanceof Builder || $builder instanceof Relation)
+        if ($wheres)
         {
-            if ($wheres)
-            {
-                $this->where($builder, $wheres);
-            }
+            $this->where($builder, $wheres);
+        }
 
-            if ($withs)
-            {
-                $builder->with($withs);
-            }
+        if ($withs)
+        {
+            $builder->with($withs);
+        }
 
-            if ($withsCount)
-            {
-                $builder->withCount($withsCount);
-            }
+        if ($withsCount)
+        {
+            $builder->withCount($withsCount);
         }
 
         return $this;
     }
 
-    protected function beforeWhere(Builder $builder)
+    protected function beforeWhere($builder)
     {
         return $this;
     }
 
-    protected function keepWhere(Builder $builder)
+    protected function keepWhere($builder)
     {
         return $this;
     }
 
-    protected function afterWhere(Builder $builder)
+    protected function afterWhere($builder)
     {
         return $this;
     }
