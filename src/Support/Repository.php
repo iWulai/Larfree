@@ -64,7 +64,7 @@ abstract class Repository
      */
     public function get(array $wheres = null, array $withs = null, array $withsCount = null)
     {
-        $builder = $this->model->newQuery()->select($this->columns);
+        $builder = $this->model::query()->select($this->columns);
 
         $this->buildQuery($builder, $wheres, $withs, $withsCount);
 
@@ -83,7 +83,7 @@ abstract class Repository
      */
     public function paginate(int $perPage = null, array $wheres = null, array $withs = null, array $withsCount = null)
     {
-        $builder = $this->model->newQuery()->select($this->columns);
+        $builder = $this->model::query()->select($this->columns);
 
         $this->buildQuery($builder, $wheres, $withs, $withsCount);
 
@@ -103,7 +103,7 @@ abstract class Repository
      */
     public function pluck(string $column, $key = null, array $wheres = null, array $withs = null, array $withsCount = null)
     {
-        $builder = $this->model->newQuery()->select($this->columns);
+        $builder = $this->model::query()->select($this->columns);
 
         $this->buildQuery($builder, $wheres, $withs, $withsCount);
 
@@ -136,7 +136,7 @@ abstract class Repository
      */
     public function find(int $id, array $wheres = null, array $appends = null)
     {
-        $builder = $this->model->newQuery()->select($this->columns);
+        $builder = $this->model::query()->select($this->columns);
 
         if ($wheres)
         {
@@ -189,7 +189,7 @@ abstract class Repository
      */
     public function delete(int $id, array $wheres = null)
     {
-        $builder = $this->model->newQuery()->select($this->columns);
+        $builder = $this->model::query()->select($this->columns);
 
         if ($wheres)
         {
