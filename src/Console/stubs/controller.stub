@@ -9,7 +9,7 @@ use App\Repositories\NamespaceDummyRepository;
 class DummyClass extends Controller
 {
     protected $validator = [
-        'login' => [
+        'store' => [
             'rules' => [
                 //
             ],

@@ -17,7 +17,23 @@ abstract class Controller extends BaseController
     /**
      * @var array
      */
-    protected $validator = [];
+    protected $validator = [
+        'store' => [
+            'rules' => [
+                //
+            ],
+            'messages' => [
+                //
+            ],
+        ],
+        'update' => [
+            'rules' => [
+                //
+            ],
+            'messages' => [
+                //
+            ],
+        ],];
 
     /**
      * @author iwulai
@@ -33,7 +49,7 @@ abstract class Controller extends BaseController
     {
         $request = Request::instance();
 
-        if (! empty($this->validator[$method]) && in_array($request->method(), ['POST', 'PUT']))
+        if (isset($this->validator[$method]))
         {
             $rule = $this->validator[$method]['rules'] ?? [];
 
