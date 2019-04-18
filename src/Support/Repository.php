@@ -2,8 +2,8 @@
 
 namespace Larfree\Support;
 
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
+use Illuminate\Database\Eloquent\Builder;
 use Larfree\Exceptions\ModelNotFoundException;
 use Larfree\Exceptions\DatabaseSaveFailedException;
 use Larfree\Exceptions\PrimaryKeyNotFoundException;
@@ -64,23 +64,24 @@ abstract class Repository
      */
     public function paginate(int $perPage = null, array $wheres = null, array $withs = null, array $withsCount = null)
     {
-        return $this->model->newQuery()->select($this->columns)
-            ->when(! empty($wheres), function (Builder $builder) use ($wheres)
-                {
-                    $this->where($builder, $wheres);
-                }
-            )
-            ->when(! empty($withs), function (Builder $builder) use ($withs)
-                {
-                    $builder->with($withs);
-                }
-            )
-            ->when(! empty($withsCount), function (Builder $builder) use ($withsCount)
-                {
-                    $builder->withCount($withsCount);
-                }
-            )
-            ->paginate($perPage ?: $this->perPage);
+        $builder = $this->model->newQuery()->select($this->columns);
+
+        if ($wheres)
+        {
+            $this->where($builder, $wheres);
+        }
+
+        if ($withs)
+        {
+            $builder->with($withs);
+        }
+
+        if ($withsCount)
+        {
+            $builder->with($withsCount);
+        }
+
+        return $builder->paginate($perPage ?: $this->perPage);
     }
 
     /**
@@ -103,21 +104,27 @@ abstract class Repository
      *
      * @param int        $id
      * @param array|null $wheres
+     * @param array|null $append
      *
      * @return Model
      */
-    public function find(int $id, array $wheres = null)
+    public function find(int $id, array $wheres = null, array $appends = null)
     {
+        $builder = $this->model->newQuery()->select($this->columns);
+
+        if ($wheres)
+        {
+            $this->where($builder, $wheres);
+        }
         /**
          * @var Model $model
          */
-        $model = $this->model->newQuery()->select($this->columns)
-            ->when(! empty($wheres), function (Builder $builder) use ($wheres)
-                {
-                    $this->where($builder, $wheres);
-                }
-            )
-            ->find($id);
+        $model = $builder->find($id);
+
+        if ($appends)
+        {
+            $model->setAppends($appends);
+        }
 
         return $model;
     }
@@ -156,16 +163,16 @@ abstract class Repository
      */
     public function delete(int $id, array $wheres = null)
     {
+        $builder = $this->model->newQuery()->select($this->columns);
+
+        if ($wheres)
+        {
+            $this->where($builder, $wheres);
+        }
         /**
          * @var Model $model
          */
-        $model = $this->model->newQuery()->select($this->columns)
-            ->when(! empty($wheres), function (Builder $builder) use ($wheres)
-                {
-                    $this->where($builder, $wheres);
-                }
-            )
-            ->find($id);
+        $model = $builder->find($id);
 
         if (is_null($model))
         {
@@ -229,33 +236,47 @@ abstract class Repository
 
     protected function where(Builder $builder, array $wheres)
     {
-        foreach ($wheres as $column => $where)
-        {
-            if (is_array($where))
+        $this->beforeWhere($builder);
+
+        $builder->where(function (Builder $builder) use ($wheres)
             {
-                $operator = Arr::get($where, 0);
-
-                $value = Arr::get($where, 1);
-
-                $boolean = Arr::get($where, 2, 'and');
-
-                if(Arr::get($where, 3, false) === true)
+                foreach ($wheres as $column => $where)
                 {
-                    $builder->where(function (Builder $builder) use ($column, $operator, $value, $boolean)
-                        {
-                            $builder->where($column, $operator, $value, $boolean);
-                        }
-                    );
+                    if (is_array($where))
+                    {
+                        $operator = Arr::get($where, 0);
+
+                        $value = Arr::get($where, 1);
+
+                        $boolean = Arr::get($where, 2, 'and');
+
+                        $builder->where($column, $operator, $value, $boolean);
+                    }
+                    else
+                    {
+                        $builder->where($column, $where);
+                    }
                 }
-                else
-                {
-                    $builder->where($column, $operator, $value, $boolean);
-                }
+
+                $this->keepWhere($builder);
             }
-            else
-            {
-                $builder->where($column, $where);
-            }
-        }
+        );
+
+        $this->afterWhere($builder);
+    }
+
+    protected function beforeWhere(Builder $builder)
+    {
+        return $this;
+    }
+
+    protected function keepWhere(Builder $builder)
+    {
+        return $this;
+    }
+
+    protected function afterWhere(Builder $builder)
+    {
+        return $this;
     }
 }
