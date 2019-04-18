@@ -3,6 +3,7 @@
 namespace Larfree\Support;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Arr;
 use Larfree\Exceptions\ModelNotFoundException;
 use Larfree\Exceptions\DatabaseSaveFailedException;
 use Larfree\Exceptions\PrimaryKeyNotFoundException;
@@ -55,28 +56,28 @@ abstract class Repository
      * @author iwulai
      *
      * @param int|null   $perPage
-     * @param array|null $where
-     * @param array|null $with
-     * @param array|null $withCount
+     * @param array|null $wheres
+     * @param array|null $withs
+     * @param array|null $withsCount
      *
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public function paginate(int $perPage = null, array $where = null, array $with = null, array $withCount = null)
+    public function paginate(int $perPage = null, array $wheres = null, array $withs = null, array $withsCount = null)
     {
         return $this->model->newQuery()->select($this->columns)
-            ->when(! empty($where), function (Builder $builder) use ($where)
+            ->when(! empty($wheres), function (Builder $builder) use ($wheres)
                 {
-                    $builder->where($where);
+                    $this->where($builder, $wheres);
                 }
             )
-            ->when(! empty($with), function (Builder $builder) use ($with)
+            ->when(! empty($withs), function (Builder $builder) use ($withs)
                 {
-                    $builder->with($with);
+                    $builder->with($withs);
                 }
             )
-            ->when(! empty($withCount), function (Builder $builder) use ($withCount)
+            ->when(! empty($withsCount), function (Builder $builder) use ($withsCount)
                 {
-                    $builder->withCount($withCount);
+                    $builder->withCount($withsCount);
                 }
             )
             ->paginate($perPage ?: $this->perPage);
@@ -101,19 +102,19 @@ abstract class Repository
      * @author iwulai
      *
      * @param int        $id
-     * @param array|null $where
+     * @param array|null $wheres
      *
      * @return Model
      */
-    public function find(int $id, array $where = null)
+    public function find(int $id, array $wheres = null)
     {
         /**
          * @var Model $model
          */
         $model = $this->model->newQuery()->select($this->columns)
-            ->when(! empty($where), function (Builder $builder) use ($where)
+            ->when(! empty($wheres), function (Builder $builder) use ($wheres)
                 {
-                    return $builder->where($where);
+                    $this->where($builder, $wheres);
                 }
             )
             ->find($id);
@@ -146,22 +147,22 @@ abstract class Repository
      * @author iwulai
      *
      * @param int        $id
-     * @param array|null $where
+     * @param array|null $wheres
      *
      * @return Model
      * @throws DatabaseSaveFailedException
      * @throws ModelNotFoundException
      * @throws \Exception
      */
-    public function delete(int $id, array $where = null)
+    public function delete(int $id, array $wheres = null)
     {
         /**
          * @var Model $model
          */
         $model = $this->model->newQuery()->select($this->columns)
-            ->when(! empty($where), function (Builder $builder) use ($where)
+            ->when(! empty($wheres), function (Builder $builder) use ($wheres)
                 {
-                    return $builder->where($where);
+                    $this->where($builder, $wheres);
                 }
             )
             ->find($id);
@@ -224,5 +225,26 @@ abstract class Repository
         }
 
         return $this;
+    }
+
+    protected function where(Builder $builder, array $wheres)
+    {
+        foreach ($wheres as $column => $where)
+        {
+            if (is_array($where))
+            {
+                $operator = Arr::get($where, 0);
+
+                $value = Arr::get($where, 1);
+
+                $boolean = Arr::get($where, 2, 'and');
+
+                $builder->where($column, $operator, $value, $boolean);
+            }
+            else
+            {
+                $builder->where($column, $where);
+            }
+        }
     }
 }
