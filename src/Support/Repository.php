@@ -37,6 +37,13 @@ abstract class Repository
         return $this;
     }
 
+    public function addColumns(array $columns)
+    {
+        $this->columns = array_merge($this->columns, $columns);
+
+        return $this;
+    }
+
     public function setPerPage(int $perPage)
     {
         $this->perPage = $perPage;
