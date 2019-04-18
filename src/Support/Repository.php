@@ -66,7 +66,7 @@ abstract class Repository
     {
         $builder = $this->model->newQuery()->select($this->columns);
 
-        $this->build($builder, $wheres, $withs, $withsCount);
+        $this->buildQuery($builder, $wheres, $withs, $withsCount);
 
         return $builder->get();
     }
@@ -85,7 +85,7 @@ abstract class Repository
     {
         $builder = $this->model->newQuery()->select($this->columns);
 
-        $this->build($builder, $wheres, $withs, $withsCount);
+        $this->buildQuery($builder, $wheres, $withs, $withsCount);
 
         return $builder->paginate($perPage ?: $this->perPage);
     }
@@ -105,7 +105,7 @@ abstract class Repository
     {
         $builder = $this->model->newQuery()->select($this->columns);
 
-        $this->build($builder, $wheres, $withs, $withsCount);
+        $this->buildQuery($builder, $wheres, $withs, $withsCount);
 
         return $builder->pluck($column, $key);
     }
@@ -291,7 +291,7 @@ abstract class Repository
         $this->afterWhere($builder);
     }
 
-    protected function build($builder, array $wheres = null, array $withs = null, array $withsCount = null)
+    protected function buildQuery($builder, array $wheres = null, array $withs = null, array $withsCount = null)
     {
         if (! $builder instanceof Builder || ! $builder instanceof Relation)
         {
