@@ -2,6 +2,7 @@
 
 namespace Larfree\Support;
 
+use Closure;
 use Illuminate\Support\Arr;
 use Illuminate\Database\Eloquent\Builder;
 use Larfree\Exceptions\ModelNotFoundException;
@@ -276,13 +277,7 @@ abstract class Repository
                 {
                     if (is_array($where))
                     {
-                        $operator = Arr::get($where, 0);
-
-                        $value = Arr::get($where, 1);
-
-                        $boolean = Arr::get($where, 2, 'and');
-
-                        $builder->where($column, $operator, $value, $boolean);
+                        $this->parseWhere($builder, $column, $where);
                     }
                     else
                     {
@@ -295,6 +290,57 @@ abstract class Repository
         );
 
         $this->afterWhere($builder);
+    }
+
+    /**
+     * @author iwulai
+     *
+     * @param Builder|Relation $builder
+     * @param string           $column
+     * @param array            $where
+     *
+     * @return $this
+     */
+    public function parseWhere($builder, string $column, array $where)
+    {
+        $operator = Arr::get($where, 0);
+
+        $value = Arr::get($where, 1);
+
+        $boolean = Arr::get($where, 2, 'and');
+
+        if ($operator instanceof Closure)
+        {
+            $operator($builder);
+        }
+        else
+        {
+            if (is_array($value))
+            {
+                if ($operator === 'in')
+                {
+                    $builder->whereIn($column, $value, $boolean);
+                }
+                elseif ($operator === 'not in')
+                {
+                    $builder->whereNotIn($column, $value, $boolean);
+                }
+                elseif ($operator === 'between')
+                {
+                    $builder->whereBetween($column, $value, $boolean);
+                }
+                elseif ($operator === 'not between')
+                {
+                    $builder->whereNotBetween($column, $value, $boolean);
+                }
+            }
+            else
+            {
+                $builder->where($column, $operator, $value, $boolean);
+            }
+        }
+
+        return $this;
     }
 
     /**
