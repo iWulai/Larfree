@@ -293,24 +293,22 @@ abstract class Repository
 
     protected function buildQuery($builder, array $wheres = null, array $withs = null, array $withsCount = null)
     {
-        if (! $builder instanceof Builder && ! $builder instanceof Relation)
+        if ($builder instanceof Builder || $builder instanceof Relation)
         {
-            return $this;
-        }
+            if ($wheres)
+            {
+                $this->where($builder, $wheres);
+            }
 
-        if ($wheres)
-        {
-            $this->where($builder, $wheres);
-        }
+            if ($withs)
+            {
+                $builder->with($withs);
+            }
 
-        if ($withs)
-        {
-            $builder->with($withs);
-        }
-
-        if ($withsCount)
-        {
-            $builder->withCount($withsCount);
+            if ($withsCount)
+            {
+                $builder->withCount($withsCount);
+            }
         }
 
         return $this;
