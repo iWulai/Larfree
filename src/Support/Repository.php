@@ -55,6 +55,37 @@ abstract class Repository
     /**
      * @author iwulai
      *
+     * @param array|null $wheres
+     * @param array|null $withs
+     * @param array|null $withsCount
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function get(array $wheres = null, array $withs = null, array $withsCount = null)
+    {
+        $builder = $this->model->newQuery()->select($this->columns);
+
+        if ($wheres)
+        {
+            $this->where($builder, $wheres);
+        }
+
+        if ($withs)
+        {
+            $builder->with($withs);
+        }
+
+        if ($withsCount)
+        {
+            $builder->with($withsCount);
+        }
+
+        return $builder->get();
+    }
+
+    /**
+     * @author iwulai
+     *
      * @param int|null   $perPage
      * @param array|null $wheres
      * @param array|null $withs
