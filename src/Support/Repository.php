@@ -59,26 +59,13 @@ abstract class Repository
      * @param array|null $withs
      * @param array|null $withsCount
      *
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return Builder[]|\Illuminate\Database\Eloquent\Collection
      */
     public function get(array $wheres = null, array $withs = null, array $withsCount = null)
     {
         $builder = $this->model->newQuery()->select($this->columns);
 
-        if ($wheres)
-        {
-            $this->where($builder, $wheres);
-        }
-
-        if ($withs)
-        {
-            $builder->with($withs);
-        }
-
-        if ($withsCount)
-        {
-            $builder->with($withsCount);
-        }
+        $this->build($builder, $wheres, $withs, $withsCount);
 
         return $builder->get();
     }
@@ -97,22 +84,29 @@ abstract class Repository
     {
         $builder = $this->model->newQuery()->select($this->columns);
 
-        if ($wheres)
-        {
-            $this->where($builder, $wheres);
-        }
-
-        if ($withs)
-        {
-            $builder->with($withs);
-        }
-
-        if ($withsCount)
-        {
-            $builder->with($withsCount);
-        }
+        $this->build($builder, $wheres, $withs, $withsCount);
 
         return $builder->paginate($perPage ?: $this->perPage);
+    }
+
+    /**
+     * @author iwulai
+     *
+     * @param string     $column
+     * @param null       $key
+     * @param array|null $wheres
+     * @param array|null $withs
+     * @param array|null $withsCount
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function pluck(string $column, $key = null, array $wheres = null, array $withs = null, array $withsCount = null)
+    {
+        $builder = $this->model->newQuery()->select($this->columns);
+
+        $this->build($builder, $wheres, $withs, $withsCount);
+
+        return $builder->pluck($column, $key);
     }
 
     /**
@@ -294,6 +288,26 @@ abstract class Repository
         );
 
         $this->afterWhere($builder);
+    }
+
+    protected function build(Builder $builder, array $wheres = null, array $withs = null, array $withsCount = null)
+    {
+        if ($wheres)
+        {
+            $this->where($builder, $wheres);
+        }
+
+        if ($withs)
+        {
+            $builder->with($withs);
+        }
+
+        if ($withsCount)
+        {
+            $builder->with($withsCount);
+        }
+
+        return $this;
     }
 
     protected function beforeWhere(Builder $builder)
