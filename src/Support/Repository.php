@@ -25,6 +25,11 @@ abstract class Repository
         return $this;
     }
 
+    public function getModel()
+    {
+        return $this->model;
+    }
+
     public function setColumns(array $columns)
     {
         $this->columns = $columns;
