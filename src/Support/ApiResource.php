@@ -2,6 +2,10 @@
 
 namespace Larfree\Support;
 
+use JsonSerializable;
+use Illuminate\Contracts\Support\Jsonable;
+use Illuminate\Contracts\Support\Arrayable;
+
 class ApiResource
 {
     protected $status;
@@ -23,6 +27,11 @@ class ApiResource
         $this->data = $data;
 
         $this->message = $message;
+    }
+
+    public static function make($data = null, string $message = null, int $status = ApiResponse::HTTP_OK, string $code = null)
+    {
+        return new static($data, $message, $status, $code);
     }
 
     public function setStatus(int $status)
@@ -97,5 +106,28 @@ class ApiResource
     public function getBody()
     {
         return array_merge(['status' => $this->status, 'code' => $this->code, 'message' => $this->message, 'data' => $this->data], $this->body);
+    }
+
+    public function __toString()
+    {
+        return json_encode(array_map(function ($value)
+            {
+                if ($value instanceof JsonSerializable)
+                {
+                    return $value->jsonSerialize();
+                }
+                elseif ($value instanceof Jsonable)
+                {
+                    return json_decode($value->toJson(), true);
+                }
+                elseif ($value instanceof Arrayable)
+                {
+                    return $value->toArray();
+                }
+
+                return $value;
+            },
+            $this->getBody())
+        );
     }
 }

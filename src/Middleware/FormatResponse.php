@@ -31,19 +31,11 @@ class FormatResponse
 
         if ($content instanceof ApiResource) return ApiResponse::make($content);
 
+        if ($content instanceof AbstractPaginator) return ApiResponse::paginate($content->toArray());
+
         $form = new ApiResource(null, null, $status);
 
-        if ($content instanceof AbstractPaginator)
-        {
-            $content = $content->toArray();
-
-            $form->setData($content['data']);
-
-            $form->addBody('link', Arr::only($content, ['first_page_url', 'last_page_url', 'prev_page_url', 'next_page_url']));
-
-            $form->addBody('meta', Arr::only($content, ['current_page', 'last_page', 'per_page', 'total']));
-        }
-        elseif (is_string($content) || is_numeric($content))
+        if (is_string($content) || is_numeric($content))
         {
             $form->setMessage($content);
         }
