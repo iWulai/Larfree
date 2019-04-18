@@ -3,7 +3,6 @@
 namespace Larfree\Middleware;
 
 use Closure;
-use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
 use Larfree\Support\ApiResponse;
 use Larfree\Support\ApiResource;

@@ -2,12 +2,12 @@
 
 namespace Larfree\Support;
 
-use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Arr;
 use Illuminate\Database\Eloquent\Builder;
 use Larfree\Exceptions\ModelNotFoundException;
 use Larfree\Exceptions\DatabaseSaveFailedException;
 use Larfree\Exceptions\PrimaryKeyNotFoundException;
+use Illuminate\Database\Eloquent\Relations\Relation;
 
 abstract class Repository
 {
