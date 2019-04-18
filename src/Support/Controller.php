@@ -2,6 +2,7 @@
 
 namespace Larfree\Support;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Validator;
 use Larfree\Exceptions\ValidateException;
@@ -26,14 +27,8 @@ abstract class Controller extends BaseController
                 //
             ],
         ],
-        'update' => [
-            'rules' => [
-                //
-            ],
-            'messages' => [
-                //
-            ],
-        ],];
+        'update',
+    ];
 
     /**
      * @author iwulai
@@ -49,15 +44,15 @@ abstract class Controller extends BaseController
     {
         $request = Request::instance();
 
-        if (isset($this->validator[$method]))
+        if (isset($this->validator[$method]) || in_array($method, $this->validator))
         {
-            $rule = $this->validator[$method]['rules'] ?? [];
+            $rules = Arr::get($this->validator, $method . '.rules', []);
 
-            $message = $this->validator[$method]['messages'] ?? [];
+            $messages = Arr::get($this->validator, $method . '.messages', []);
             /**
              * @var \Illuminate\Validation\Validator $validator
              */
-            $validator = Validator::make($request->all(), $rule, $message);
+            $validator = Validator::make($request->all(), $rules, $messages);
 
             if ($validator->fails())
             {

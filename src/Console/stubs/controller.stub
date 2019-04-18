@@ -17,14 +17,7 @@ class DummyClass extends Controller
                 //
             ],
         ],
-        'update' => [
-            'rules' => [
-                //
-            ],
-            'messages' => [
-                //
-            ],
-        ],
+        'update',
     ];
 
     public function __construct(DummyRepository $repository)
