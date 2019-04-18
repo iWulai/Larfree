@@ -2,6 +2,7 @@
 
 namespace Larfree\Support;
 
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Arr;
 use Illuminate\Database\Eloquent\Builder;
 use Larfree\Exceptions\ModelNotFoundException;
@@ -290,8 +291,13 @@ abstract class Repository
         $this->afterWhere($builder);
     }
 
-    protected function build(Builder $builder, array $wheres = null, array $withs = null, array $withsCount = null)
+    protected function build($builder, array $wheres = null, array $withs = null, array $withsCount = null)
     {
+        if (! $builder instanceof Builder || ! $builder instanceof Relation)
+        {
+            return $this;
+        }
+
         if ($wheres)
         {
             $this->where($builder, $wheres);
