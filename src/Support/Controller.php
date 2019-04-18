@@ -59,7 +59,10 @@ abstract class Controller extends BaseController
                 throw new ValidateException($validator);
             }
 
-            $request->replace($validator->validated());
+            if (in_array($request->method(), ['POST', 'PUT']))
+            {
+                $request->replace($validator->validated());
+            }
         }
 
         return call_user_func_array([$this, $method], $parameters);
