@@ -239,7 +239,18 @@ abstract class Repository
 
                 $boolean = Arr::get($where, 2, 'and');
 
-                $builder->where($column, $operator, $value, $boolean);
+                if(Arr::get($where, 3, false) === true)
+                {
+                    $builder->where(function (Builder $builder) use ($column, $operator, $value, $boolean)
+                        {
+                            $builder->where($column, $operator, $value, $boolean);
+                        }
+                    );
+                }
+                else
+                {
+                    $builder->where($column, $operator, $value, $boolean);
+                }
             }
             else
             {
