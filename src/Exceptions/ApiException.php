@@ -21,7 +21,7 @@ class ApiException extends Exception
     {
         $this->data = $data;
 
-        $this->status = $status ?? ApiResponse::HTTP_UNPROCESSABLE_ENTITY;
+        $this->status = $status ?: $this->status ?: ApiResponse::HTTP_UNPROCESSABLE_ENTITY;
 
         if (! $message) $message = $this->message;
 
