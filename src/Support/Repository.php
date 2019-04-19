@@ -3,7 +3,6 @@
 namespace Larfree\Support;
 
 use Illuminate\Support\Arr;
-use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Builder;
 use Larfree\Exceptions\ModelNotFoundException;
 use Larfree\Exceptions\DatabaseSaveFailedException;
@@ -116,14 +115,14 @@ abstract class Repository
      *
      * @param array $attributes
      *
-     * @return Model
+     * @return $this
      * @throws DatabaseSaveFailedException
      */
     public function create(array $attributes)
     {
         $this->saveAttributes($attributes);
 
-        return $this->model;
+        return $this;
     }
 
     /**
@@ -132,7 +131,7 @@ abstract class Repository
      * @param int        $id
      * @param array|null $wheres
      *
-     * @return Model|null
+     * @return $this
      */
     public function find(int $id, array $wheres = null)
     {
@@ -150,7 +149,7 @@ abstract class Repository
             $this->model = $model;
         }
 
-        return $model;
+        return $this;
     }
 
     /**
@@ -160,7 +159,7 @@ abstract class Repository
      * @param array|null $withs
      * @param array|null $withsCount
      *
-     * @return Model
+     * @return $this
      */
     public function first(array $wheres = null, array $withs = null, array $withsCount = null)
     {
@@ -175,7 +174,7 @@ abstract class Repository
             $this->model = $model;
         }
 
-        return $model;
+        return $this;
     }
 
     /**
@@ -183,7 +182,7 @@ abstract class Repository
      *
      * @param array $attributes
      *
-     * @return Model
+     * @return $this
      * @throws DatabaseSaveFailedException
      * @throws PrimaryKeyNotFoundException
      */
@@ -196,7 +195,7 @@ abstract class Repository
 
         $this->saveAttributes($attributes);
 
-        return $this->model;
+        return $this;
     }
 
     /**
@@ -205,7 +204,7 @@ abstract class Repository
      * @param int        $id
      * @param array|null $wheres
      *
-     * @return Model
+     * @return $this
      * @throws DatabaseSaveFailedException
      * @throws ModelNotFoundException
      * @throws \Exception
@@ -233,17 +232,9 @@ abstract class Repository
             throw new DatabaseSaveFailedException();
         }
 
-        return $model;
-    }
+        $this->model = $model;
 
-    /**
-     * @author iwulai
-     *
-     * @return bool
-     */
-    protected function hasPrimaryKey()
-    {
-        return !! $this->model->getAttributeValue('id');
+        return $this;
     }
 
     /**
@@ -288,6 +279,8 @@ abstract class Repository
      *
      * @param Builder|Relation $builder
      * @param array            $wheres
+     *
+     * @return $this
      */
     protected function where($builder, array $wheres)
     {
@@ -332,6 +325,63 @@ abstract class Repository
         );
 
         $this->afterWhere($builder);
+
+        return $this;
+    }
+
+    /**
+     * @author iwulai
+     *
+     * @param Builder|Relation $builder
+     * @param array|null       $wheres
+     * @param array|null       $withs
+     * @param array|null       $withsCount
+     *
+     * @return $this
+     */
+    protected function buildQuery($builder, array $wheres = null, array $withs = null, array $withsCount = null)
+    {
+        if ($wheres)
+        {
+            $this->where($builder, $wheres);
+        }
+
+        if ($withs)
+        {
+            $builder->with($withs);
+        }
+
+        if ($withsCount)
+        {
+            $builder->withCount($withsCount);
+        }
+
+        return $this;
+    }
+
+    protected function beforeWhere($builder)
+    {
+        return $this;
+    }
+
+    protected function keepWhere($builder)
+    {
+        return $this;
+    }
+
+    protected function afterWhere($builder)
+    {
+        return $this;
+    }
+
+    /**
+     * @author iwulai
+     *
+     * @return bool
+     */
+    protected function hasPrimaryKey()
+    {
+        return !! $this->model->getAttributeValue('id');
     }
 
     /**
@@ -379,50 +429,5 @@ abstract class Repository
         }
 
         return $wheres;
-    }
-
-    /**
-     * @author iwulai
-     *
-     * @param Builder|Relation $builder
-     * @param array|null       $wheres
-     * @param array|null       $withs
-     * @param array|null       $withsCount
-     *
-     * @return $this
-     */
-    protected function buildQuery($builder, array $wheres = null, array $withs = null, array $withsCount = null)
-    {
-        if ($wheres)
-        {
-            $this->where($builder, $wheres);
-        }
-
-        if ($withs)
-        {
-            $builder->with($withs);
-        }
-
-        if ($withsCount)
-        {
-            $builder->withCount($withsCount);
-        }
-
-        return $this;
-    }
-
-    protected function beforeWhere($builder)
-    {
-        return $this;
-    }
-
-    protected function keepWhere($builder)
-    {
-        return $this;
-    }
-
-    protected function afterWhere($builder)
-    {
-        return $this;
     }
 }
