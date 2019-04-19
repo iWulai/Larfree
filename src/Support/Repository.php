@@ -2,8 +2,8 @@
 
 namespace Larfree\Support;
 
-use Closure;
 use Illuminate\Support\Arr;
+use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Builder;
 use Larfree\Exceptions\ModelNotFoundException;
 use Larfree\Exceptions\DatabaseSaveFailedException;
@@ -296,6 +296,53 @@ abstract class Repository
         );
 
         $this->afterWhere($builder);
+    }
+
+    /**
+     * @author iwulai
+     *
+     * @param Request $request
+     * @param array   $relations
+     *
+     * @return array
+     */
+    protected function parseRequestWhere(Request $request, array $relations)
+    {
+        $wheres = [];
+
+        foreach ($relations as $key => $relation)
+        {
+            if ($request->get($key))
+            {
+                $column = $relation['column'];
+
+                if (in_array($column, array_keys($wheres)))
+                {
+                    $columnValue = $wheres[$column]['value'];
+
+                    if (is_array($columnValue))
+                    {
+                        $wheres[$column]['value'][] = $relation['value'];
+                    }
+                    else
+                    {
+                        $wheres[$column]['operator'] = 'in';
+
+                        $wheres[$column]['value'] = [$columnValue, $relation['value']];
+                    }
+                }
+                else
+                {
+                    $where['operator'] = '=';
+
+                    $where['value'] = $relation['value'];
+
+                    $wheres[$column] = $where;
+                }
+            }
+        }
+
+        return $wheres;
     }
 
     /**
