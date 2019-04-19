@@ -156,6 +156,31 @@ abstract class Repository
     /**
      * @author iwulai
      *
+     * @param array|null $wheres
+     * @param array|null $withs
+     * @param array|null $withsCount
+     *
+     * @return Model
+     */
+    public function first(array $wheres = null, array $withs = null, array $withsCount = null)
+    {
+        $builder = $this->model::query()->select($this->columns);
+
+        $this->buildQuery($builder, $wheres, $withs, $withsCount);
+        /**
+         * @var Model $model
+         */
+        if ($model = $builder->first())
+        {
+            $this->model = $model;
+        }
+
+        return $model;
+    }
+
+    /**
+     * @author iwulai
+     *
      * @param array $attributes
      *
      * @return Model
@@ -283,7 +308,18 @@ abstract class Repository
 
                         $boolean = Arr::get($where, 'boolean', 'and');
 
-                        $builder->where($column, $operator, $value, $boolean);
+                        switch ($operator)
+                        {
+                            default :
+                                $builder->where($column, $operator, $value, $boolean);
+                            break;
+                            case 'in' :
+                                $builder->whereIn($column, $value, $boolean);
+                            break;
+                            case 'not in' :
+                                $builder->whereNotIn($column, $value, $boolean);
+                            break;
+                        }
                     }
                     else
                     {
@@ -301,18 +337,18 @@ abstract class Repository
     /**
      * @author iwulai
      *
-     * @param Request $request
-     * @param array   $relations
+     * @param array $parameters
+     * @param array $relations
      *
      * @return array
      */
-    protected function parseRequestWhere(Request $request, array $relations)
+    public function parseWhere(array $parameters, array $relations)
     {
         $wheres = [];
 
         foreach ($relations as $key => $relation)
         {
-            if ($request->get($key))
+            if (Arr::get($parameters, $key))
             {
                 $column = $relation['column'];
 
