@@ -93,20 +93,19 @@ abstract class Repository
     /**
      * @author iwulai
      *
-     * @param string     $column
-     * @param array|null $wheres
-     * @param array|null $withs
-     * @param array|null $withsCount
+     * @param string      $column
+     * @param array|null  $wheres
+     * @param string|null $key
      *
      * @return \Illuminate\Support\Collection
      */
-    public function pluck(string $column, array $wheres = null, array $withs = null, array $withsCount = null)
+    public function pluck(string $column, array $wheres = null, string $key = null)
     {
         $builder = $this->model::query()->select($this->columns);
 
-        $this->buildQuery($builder, $wheres, $withs, $withsCount);
+        $this->buildQuery($builder, $wheres);
 
-        return $builder->pluck($column);
+        return $builder->pluck($column, $key);
     }
 
     /**
