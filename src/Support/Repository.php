@@ -283,6 +283,8 @@ abstract class Repository
                         {
                             continue;
                         }
+
+                        $where = array_values($where);
                     }
 
                     if (is_array($where))
