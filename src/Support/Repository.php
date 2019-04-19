@@ -275,21 +275,15 @@ abstract class Repository
                  */
                 foreach ($wheres as $column => $where)
                 {
-                    if (is_numeric($column))
-                    {
-                        $column = $operator = Arr::pull($where, 0);
-
-                        if (is_null($column))
-                        {
-                            continue;
-                        }
-
-                        $where = array_values($where);
-                    }
-
                     if (is_array($where))
                     {
-                        $this->parseWhere($builder, $column, $where);
+                        $operator = Arr::get($where, 'operator');
+
+                        $value = Arr::get($where, 'value');
+
+                        $boolean = Arr::get($where, 'boolean', 'and');
+
+                        $builder->where($column, $operator, $value, $boolean);
                     }
                     else
                     {
@@ -302,71 +296,6 @@ abstract class Repository
         );
 
         $this->afterWhere($builder);
-    }
-
-    /**
-     * @author iwulai
-     *
-     * @param Builder|Relation $builder
-     * @param string           $column
-     * @param array            $where
-     *
-     * @return $this
-     */
-    public function parseWhere($builder, string $column, array $where)
-    {
-        $operator = Arr::get($where, 0);
-
-        $value = Arr::get($where, 1);
-
-        $boolean = Arr::get($where, 2, 'and');
-
-        if ($operator instanceof Closure)
-        {
-            $operator($builder);
-        }
-        else
-        {
-            if (is_array($value))
-            {
-                if ($operator === 'in')
-                {
-                    if (count($value) === 1)
-                    {
-                        $operator = '=';
-
-                        $builder->where($column, $operator, $value, $boolean);
-                    }
-                    else
-                    {
-                        $builder->whereIn($column, $value, $boolean);
-                    }
-                }
-                elseif ($operator === 'not in')
-                {
-                    if (count($value) === 1)
-                    {
-                        $operator = '<>';
-
-                        $builder->where($column, $operator, $value, $boolean);
-                    }
-                    else
-                    {
-                        $builder->whereNotIn($column, $value, $boolean);
-                    }
-                }
-                else
-                {
-                    $builder->where($column, $operator, $value, $boolean);
-                }
-            }
-            else
-            {
-                $builder->where($column, $operator, $value, $boolean);
-            }
-        }
-
-        return $this;
     }
 
     /**
