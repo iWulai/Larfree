@@ -275,6 +275,16 @@ abstract class Repository
                  */
                 foreach ($wheres as $column => $where)
                 {
+                    if (is_numeric($column))
+                    {
+                        $column = $operator = Arr::pull($where, 0);
+
+                        if (is_null($column))
+                        {
+                            continue;
+                        }
+                    }
+
                     if (is_array($where))
                     {
                         $this->parseWhere($builder, $column, $where);
