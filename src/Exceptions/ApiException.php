@@ -3,7 +3,6 @@
 namespace Larfree\Exceptions;
 
 use Exception;
-use Throwable;
 use Larfree\Support\ApiForm;
 use Larfree\Support\ApiResponse;
 
@@ -17,15 +16,17 @@ class ApiException extends Exception
 
     protected $status = null;
 
-    public function __construct(string $message = null, int $status = null, $data = null, Throwable $previous = null)
+    public function __construct(string $message = null, int $status = null, $data = null, int $code = null)
     {
-        $this->data = $data;
-
         $this->status = $status ?: $this->status ?: ApiResponse::HTTP_UNPROCESSABLE_ENTITY;
 
-        $this->message = $message ?: null;
+        $this->code = $code ?: $this->code;
 
-        parent::__construct($this->message, $this->status, $previous);
+        $this->message = $message ?: $this->message ?: null;
+
+        $this->data = $data ?: $this->data;
+
+        if (false) parent::__construct();
     }
 
     public function getData()
