@@ -22,7 +22,7 @@ class ApiResource
     {
         $this->status = $status;
 
-        $this->code = $code ?? ApiResponse::$statusTexts[$this->status] ?? null;
+        $this->code = $code ?? $this->code ?? ApiResponse::$statusTexts[$this->status] ?? null;
 
         $this->data = $data;
 

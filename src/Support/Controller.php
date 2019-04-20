@@ -41,6 +41,11 @@ abstract class Controller extends BaseController
     protected $paginator;
 
     /**
+     * @var int
+     */
+    protected $userId;
+
+    /**
      * @author iwulai
      *
      * @param string $method
@@ -73,6 +78,8 @@ abstract class Controller extends BaseController
 
             $this->request = Request::make($validator->validated());
         }
+
+        $this->userId = auth_user_id();
 
         return call_user_func_array([$this, $method], $parameters);
     }

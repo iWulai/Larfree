@@ -21,7 +21,10 @@
     "autoload": {
         "psr-4": {
             "Larfree\\": "src/"
-        }
+        },
+        "files": [
+            "functions.php"
+        ]
     },
     "extra": {
         "laravel": {
