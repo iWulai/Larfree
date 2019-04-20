@@ -2,12 +2,11 @@
 
 namespace Larfree\Support;
 
+use Closure;
 use Illuminate\Support\Arr;
 use Illuminate\Database\Eloquent\Builder;
 use Larfree\Exceptions\ModelNotFoundException;
 use Larfree\Exceptions\DatabaseSaveFailedException;
-use Larfree\Exceptions\PrimaryKeyNotFoundException;
-use Illuminate\Database\Eloquent\Relations\Relation;
 
 abstract class Repository
 {
@@ -16,7 +15,20 @@ abstract class Repository
      */
     protected $model;
 
+    /**
+     * @var array
+     */
     protected $columns = ['id'];
+
+    /**
+     * @var array
+     */
+    protected $appends = [];
+
+    /**
+     * @var Builder
+     */
+    protected $builder;
 
     public function setModel(Model $model)
     {
@@ -44,9 +56,16 @@ abstract class Repository
         return $this;
     }
 
-    public function setPerPage(int $perPage)
+    public function setAppends(array $appends)
     {
-        $this->perPage = $perPage;
+        $this->appends = $appends;
+
+        return $this;
+    }
+
+    public function query()
+    {
+        $this->builder = $this->model->setAppends($this->appends)::query()->select($this->columns);
 
         return $this;
     }
@@ -54,56 +73,48 @@ abstract class Repository
     /**
      * @author iwulai
      *
-     * @param array|null $wheres
-     * @param array|null $withs
-     * @param array|null $withsCount
-     *
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function get(array $wheres = null, array $withs = null, array $withsCount = null)
+    public function get()
     {
-        $builder = $this->model::query()->select($this->columns);
-
-        $this->buildQuery($builder, $wheres, $withs, $withsCount);
-
-        return $builder->get();
+        return $this->builder->get();
     }
 
     /**
      * @author iwulai
      *
-     * @param int|null   $perPage
-     * @param array|null $wheres
-     * @param array|null $withs
-     * @param array|null $withsCount
+     * @param array $ids
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function findMany(array $ids)
+    {
+        return $this->builder->findMany($ids);
+    }
+
+    /**
+     * @author iwulai
+     *
+     * @param int|null $perPage
      *
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public function paginate(int $perPage = null, array $wheres = null, array $withs = null, array $withsCount = null)
+    public function paginate(int $perPage = null)
     {
-        $builder = $this->model::query()->select($this->columns);
-
-        $this->buildQuery($builder, $wheres, $withs, $withsCount);
-
-        return $builder->paginate($perPage);
+        return $this->builder->paginate($perPage);
     }
 
     /**
      * @author iwulai
      *
      * @param string      $column
-     * @param array|null  $wheres
      * @param string|null $key
      *
      * @return \Illuminate\Support\Collection
      */
-    public function pluck(string $column, array $wheres = null, string $key = null)
+    public function pluck(string $column, string $key = null)
     {
-        $builder = $this->model::query()->select($this->columns);
-
-        $this->buildQuery($builder, $wheres);
-
-        return $builder->pluck($column, $key);
+        return $this->builder->pluck($column, $key);
     }
 
     /**
@@ -124,53 +135,37 @@ abstract class Repository
     /**
      * @author iwulai
      *
-     * @param int        $id
-     * @param array|null $wheres
+     * @param int $id
      *
-     * @return $this
+     * @return Model|null
      */
-    public function find(int $id, array $wheres = null)
+    public function find(int $id)
     {
-        $builder = $this->model::query()->select($this->columns);
+        $model = $this->builder->find($id);
 
-        if ($wheres)
-        {
-            $this->where($builder, $wheres);
-        }
-        /**
-         * @var Model $model
-         */
-        if ($model = $builder->find($id))
+        if ($model instanceof Model)
         {
             $this->model = $model;
         }
 
-        return $this;
+        return $model;
     }
 
     /**
      * @author iwulai
      *
-     * @param array|null $wheres
-     * @param array|null $withs
-     * @param array|null $withsCount
-     *
-     * @return $this
+     * @return Model|null
      */
-    public function first(array $wheres = null, array $withs = null, array $withsCount = null)
+    public function first()
     {
-        $builder = $this->model::query()->select($this->columns);
+        $model = $this->builder->first();
 
-        $this->buildQuery($builder, $wheres, $withs, $withsCount);
-        /**
-         * @var Model $model
-         */
-        if ($model = $builder->first())
+        if ($model instanceof Model)
         {
             $this->model = $model;
         }
 
-        return $this;
+        return $model;
     }
 
     /**
@@ -180,15 +175,9 @@ abstract class Repository
      *
      * @return $this
      * @throws DatabaseSaveFailedException
-     * @throws PrimaryKeyNotFoundException
      */
     public function save(array $attributes)
     {
-        if (! $this->hasPrimaryKey())
-        {
-            throw new PrimaryKeyNotFoundException();
-        }
-
         $this->saveAttributes($attributes);
 
         return $this;
@@ -197,38 +186,93 @@ abstract class Repository
     /**
      * @author iwulai
      *
-     * @param int        $id
-     * @param array|null $wheres
+     * @param int $id
      *
-     * @return $this
-     * @throws DatabaseSaveFailedException
-     * @throws ModelNotFoundException
+     * @return Model
      * @throws \Exception
      */
-    public function delete(int $id, array $wheres = null)
+    public function delete(int $id)
     {
-        $builder = $this->model::query()->select($this->columns);
-
-        if ($wheres)
+        if ($model = $this->find($id))
         {
-            $this->where($builder, $wheres);
-        }
-        /**
-         * @var Model $model
-         */
-        $model = $builder->find($id);
+            if ($model->delete())
+            {
+                return $model;
+            }
 
-        if (is_null($model))
-        {
-            throw new ModelNotFoundException();
-        }
-
-        if (! $model->delete())
-        {
             throw new DatabaseSaveFailedException();
         }
 
-        $this->model = $model;
+        throw new ModelNotFoundException();
+    }
+
+    /**
+     * @author iwulai
+     *
+     * @param array $wheres
+     *
+     * @return $this
+     */
+    public function wheres(array $wheres)
+    {
+        foreach ($wheres as $column => $where)
+        {
+            if (is_array($where))
+            {
+                if (($callback = Arr::get($where, 'callback')) && $callback instanceof Closure)
+                {
+                    $callback($this->builder);
+                }
+                else
+                {
+                    $operator = Arr::get($where, 'operator');
+
+                    $value = Arr::get($where, 'value');
+
+                    $boolean = Arr::get($where, 'boolean', 'and');
+
+                    switch ($operator)
+                    {
+                        default :
+                            $this->builder->where($column, $operator, $value, $boolean);
+                        break;
+
+                        case 'in' :
+                            $this->builder->whereIn($column, $value, $boolean);
+                        break;
+
+                        case 'not in' :
+                            $this->builder->whereNotIn($column, $value, $boolean);
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                $this->builder->where($column, $where);
+            }
+        }
+
+        return $this;
+    }
+
+    public function between($column, $left, $right, $boolean = 'and', $not = false)
+    {
+        $this->builder->whereBetween($column, [$left, $right], $boolean, $not);
+
+        return $this;
+    }
+
+    public function with(array $relations)
+    {
+        $this->builder->with($relations);
+
+        return $this;
+    }
+
+    public function withCount(array $relations)
+    {
+        $this->builder->withCount($relations);
 
         return $this;
     }
@@ -268,162 +312,5 @@ abstract class Repository
         }
 
         return $this;
-    }
-
-    /**
-     * @author iwulai
-     *
-     * @param Builder|Relation $builder
-     * @param array            $wheres
-     *
-     * @return $this
-     */
-    protected function where($builder, array $wheres)
-    {
-        $this->beforeWhere($builder);
-
-        $builder->where(function ($builder) use ($wheres)
-            {
-                /**
-                 * @var Builder|Relation $builder
-                 */
-                foreach ($wheres as $column => $where)
-                {
-                    if (is_array($where))
-                    {
-                        $operator = Arr::get($where, 'operator');
-
-                        $value = Arr::get($where, 'value');
-
-                        $boolean = Arr::get($where, 'boolean', 'and');
-
-                        switch ($operator)
-                        {
-                            default :
-                                $builder->where($column, $operator, $value, $boolean);
-                            break;
-                            case 'in' :
-                                $builder->whereIn($column, $value, $boolean);
-                            break;
-                            case 'not in' :
-                                $builder->whereNotIn($column, $value, $boolean);
-                            break;
-                        }
-                    }
-                    else
-                    {
-                        $builder->where($column, $where);
-                    }
-                }
-
-                $this->keepWhere($builder);
-            }
-        );
-
-        $this->afterWhere($builder);
-
-        return $this;
-    }
-
-    /**
-     * @author iwulai
-     *
-     * @param Builder|Relation $builder
-     * @param array|null       $wheres
-     * @param array|null       $withs
-     * @param array|null       $withsCount
-     *
-     * @return $this
-     */
-    protected function buildQuery($builder, array $wheres = null, array $withs = null, array $withsCount = null)
-    {
-        if ($wheres)
-        {
-            $this->where($builder, $wheres);
-        }
-
-        if ($withs)
-        {
-            $builder->with($withs);
-        }
-
-        if ($withsCount)
-        {
-            $builder->withCount($withsCount);
-        }
-
-        return $this;
-    }
-
-    protected function beforeWhere($builder)
-    {
-        return $this;
-    }
-
-    protected function keepWhere($builder)
-    {
-        return $this;
-    }
-
-    protected function afterWhere($builder)
-    {
-        return $this;
-    }
-
-    /**
-     * @author iwulai
-     *
-     * @return bool
-     */
-    protected function hasPrimaryKey()
-    {
-        return !! $this->model->getAttributeValue('id');
-    }
-
-    /**
-     * @author iwulai
-     *
-     * @param array $parameters
-     * @param array $relations
-     *
-     * @return array
-     */
-    public function parseWhere(array $parameters, array $relations)
-    {
-        $wheres = [];
-
-        foreach ($relations as $key => $relation)
-        {
-            if (Arr::get($parameters, $key))
-            {
-                $column = $relation['column'];
-
-                if (in_array($column, array_keys($wheres)))
-                {
-                    $columnValue = $wheres[$column]['value'];
-
-                    if (is_array($columnValue))
-                    {
-                        $wheres[$column]['value'][] = $relation['value'];
-                    }
-                    else
-                    {
-                        $wheres[$column]['operator'] = 'in';
-
-                        $wheres[$column]['value'] = [$columnValue, $relation['value']];
-                    }
-                }
-                else
-                {
-                    $where['operator'] = '=';
-
-                    $where['value'] = $relation['value'];
-
-                    $wheres[$column] = $where;
-                }
-            }
-        }
-
-        return $wheres;
     }
 }
