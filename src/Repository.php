@@ -60,7 +60,7 @@ abstract class Repository
 
     public function query()
     {
-        $this->builder = $this->model->setAppends($this->appends)::query()->select($this->columns);
+        $this->builder = $this->model->setAppends($this->appends)->newQuery()->select($this->columns);
 
         return $this;
     }
@@ -232,10 +232,12 @@ abstract class Repository
      * @param array $parameters
      * @param array $relations
      * @param array $wheres
+     * @param array $defaults
+     * @param array $finalColumns
      *
      * @return Repository
      */
-    public function parseWheres(array $parameters, array $relations, array $wheres = [])
+    public function parseWheres(array $parameters, array $relations, array $wheres = [], array $defaults = [], array $finalColumns = [])
     {
         foreach ($relations as $key => $relation)
         {
@@ -243,7 +245,34 @@ abstract class Repository
             {
                 $column = $relation['column'];
 
-                if (in_array($column, array_keys($wheres)))
+                if (Arr::get($relation, 'final', false) === true)
+                {
+                    $wheres[$column]['operator'] = '=';
+
+                    $wheres[$column]['value'] = $relation['value'];
+
+                    $finalColumns[] = $column;
+
+                    continue;
+                }
+
+                $inWheres = in_array($column, array_keys($wheres));
+
+                if (in_array($column, $finalColumns))
+                {
+                    if (! $inWheres)
+                    {
+                        $where['operator'] = '=';
+
+                        $where['value'] = $relation['value'];
+
+                        $wheres[$column] = $where;
+                    }
+
+                    continue;
+                }
+
+                if ($inWheres)
                 {
                     $columnValue = $wheres[$column]['value'];
 
@@ -268,6 +297,8 @@ abstract class Repository
                 }
             }
         }
+
+        if ($defaults) $wheres = array_merge($wheres, array_diff_key($defaults, $wheres));
 
         return $wheres ? $this->wheres($wheres) : $this;
     }
