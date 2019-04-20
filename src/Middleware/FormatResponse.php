@@ -5,7 +5,7 @@ namespace Larfree\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Larfree\Support\ApiResponse;
-use Larfree\Support\ApiResource;
+use Larfree\Support\ApiForm;
 use Illuminate\Pagination\AbstractPaginator;
 
 class FormatResponse
@@ -28,11 +28,11 @@ class FormatResponse
 
         $content = $response->getOriginalContent();
 
-        if ($content instanceof ApiResource) return ApiResponse::make($content);
+        if ($content instanceof ApiForm) return ApiResponse::make($content);
 
         if ($content instanceof AbstractPaginator) return ApiResponse::paginate($content->toArray());
 
-        $form = new ApiResource(null, null, $status);
+        $form = new ApiForm(null, null, $status);
 
         if (is_string($content) || is_numeric($content))
         {

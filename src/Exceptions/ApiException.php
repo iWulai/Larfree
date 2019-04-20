@@ -5,7 +5,7 @@ namespace Larfree\Exceptions;
 use Exception;
 use Throwable;
 use Larfree\Support\ApiResponse;
-use Larfree\Support\ApiResource;
+use Larfree\Support\ApiForm;
 
 class ApiException extends Exception
 {
@@ -40,6 +40,6 @@ class ApiException extends Exception
 
     public function render()
     {
-        return ApiResponse::make(new ApiResource($this->data, $this->message, $this->status));
+        return ApiResponse::make(new ApiForm($this->data, $this->message, $this->status));
     }
 }

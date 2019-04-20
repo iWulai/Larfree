@@ -15,14 +15,14 @@ class ApiResponse extends JsonResponse
         'Access-Control-Allow-Credentials' => 'false',
     ];
 
-    public static function make(ApiResource $form)
+    public static function make(ApiForm $form)
     {
         return new static($form->getBody(), Config::get('larfree.restful', true) === true ? $form->getStatus() : static::HTTP_OK, static::HEADERS);
     }
 
     public static function paginate(array $content)
     {
-        $resource = new ApiResource(Arr::get($content, 'data', []));
+        $resource = new ApiForm(Arr::get($content, 'data', []));
 
         $resource->addBody('link', Arr::only($content, ['first_page_url', 'last_page_url', 'prev_page_url', 'next_page_url']));
 

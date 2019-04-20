@@ -6,7 +6,7 @@ use JsonSerializable;
 use Illuminate\Contracts\Support\Jsonable;
 use Illuminate\Contracts\Support\Arrayable;
 
-class ApiResource
+class ApiForm
 {
     protected $status;
 

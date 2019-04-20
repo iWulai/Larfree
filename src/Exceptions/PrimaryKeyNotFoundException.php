@@ -6,5 +6,5 @@ use Exception;
 
 class PrimaryKeyNotFoundException extends Exception
 {
-    protected $message = 'Not found the primary key!';
+    protected $message = 'Not found the primary key of the model!';
 }
