@@ -18,8 +18,6 @@ abstract class Repository
 
     protected $columns = ['id'];
 
-    protected $perPage = 10;
-
     public function setModel(Model $model)
     {
         $this->model = $model;
@@ -87,7 +85,7 @@ abstract class Repository
 
         $this->buildQuery($builder, $wheres, $withs, $withsCount);
 
-        return $builder->paginate($perPage ?: $this->perPage);
+        return $builder->paginate($perPage);
     }
 
     /**

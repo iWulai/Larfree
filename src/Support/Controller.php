@@ -31,6 +31,11 @@ abstract class Controller extends BaseController
     ];
 
     /**
+     * @var Paginator
+     */
+    protected $paginator;
+
+    /**
      * @author iwulai
      *
      * @param string $method
@@ -43,6 +48,8 @@ abstract class Controller extends BaseController
     public function callAction($method, $parameters)
     {
         $request = Request::instance();
+
+        $this->paginator = Paginator::make($request->get('per_page', $request->get('page')));
 
         if (isset($this->validator[$method]) || in_array($method, $this->validator))
         {
