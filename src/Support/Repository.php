@@ -256,6 +256,17 @@ abstract class Repository
         return $this;
     }
 
+    /**
+     * @author iwulai
+     *
+     * @param string     $column
+     * @param int|string $left
+     * @param int|string $right
+     * @param string     $boolean
+     * @param bool       $not
+     *
+     * @return $this
+     */
     public function between($column, $left, $right, $boolean = 'and', $not = false)
     {
         $this->builder->whereBetween($column, [$left, $right], $boolean, $not);
@@ -263,6 +274,13 @@ abstract class Repository
         return $this;
     }
 
+    /**
+     * @author iwulai
+     *
+     * @param array $relations
+     *
+     * @return $this
+     */
     public function with(array $relations)
     {
         $this->builder->with($relations);
@@ -270,6 +288,13 @@ abstract class Repository
         return $this;
     }
 
+    /**
+     * @author iwulai
+     *
+     * @param array $relations
+     *
+     * @return $this
+     */
     public function withCount(array $relations)
     {
         $this->builder->withCount($relations);
