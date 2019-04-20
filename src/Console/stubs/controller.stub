@@ -43,7 +43,7 @@ class DummyClass extends Controller
      */
     public function store()
     {
-        return $this->repository->create($this->request->all())->getModel();
+        return $this->repository->create($this->request->all());
     }
 
     /**
@@ -55,7 +55,7 @@ class DummyClass extends Controller
      */
     public function show(int $id)
     {
-        return $this->repository->find($id)->getModel();
+        return $this->repository->find($id);
     }
 
     /**
@@ -69,7 +69,7 @@ class DummyClass extends Controller
      */
     public function update(int $id)
     {
-        return $this->repository->find($id)->save($this->request->all())->getModel();
+        return $this->repository->query()->find($id, false)->save($this->request->all());
     }
 
     /**
@@ -83,6 +83,6 @@ class DummyClass extends Controller
      */
     public function destroy(int $id)
     {
-        return $this->repository->delete($id)->getModel();
+        return $this->repository->query()->delete($id);
     }
 }

@@ -135,20 +135,28 @@ abstract class Repository
     /**
      * @author iwulai
      *
-     * @param int $id
+     * @param int  $id
+     * @param bool $return
      *
-     * @return Model|null
+     * @return $this|Model|null
+     * @throws ModelNotFoundException
      */
-    public function find(int $id)
+    public function find(int $id, bool $return = true)
     {
+        /**
+         * @var Model $model
+         */
         $model = $this->builder->find($id);
 
-        if ($model instanceof Model)
-        {
-            $this->model = $model;
-        }
+        $instanceof = $model instanceof Model;
 
-        return $model;
+        if ($instanceof) $this->model = $model;
+
+        if ($return) return $model;
+
+        if (! $instanceof) throw new ModelNotFoundException();
+
+        return $this;
     }
 
     /**
