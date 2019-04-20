@@ -22,7 +22,7 @@ class ApiForm
     {
         $this->status = $status;
 
-        $this->code = $code;
+        $this->code = $code ?? $status;
 
         $this->data = $data;
 
