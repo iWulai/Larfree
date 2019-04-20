@@ -3,9 +3,9 @@
 namespace Larfree\Middleware;
 
 use Closure;
+use Larfree\ApiForm;
+use Larfree\ApiResponse;
 use Illuminate\Http\Request;
-use Larfree\Support\ApiForm;
-use Larfree\Support\ApiResponse;
 use Illuminate\Pagination\AbstractPaginator;
 
 class FormatResponse

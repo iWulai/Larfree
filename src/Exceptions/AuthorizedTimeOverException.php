@@ -2,7 +2,7 @@
 
 namespace Larfree\Exceptions;
 
-use Larfree\Support\ApiResponse;
+use Larfree\ApiResponse;
 
 class AuthorizedTimeOverException extends ApiException
 {

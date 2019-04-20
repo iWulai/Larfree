@@ -3,7 +3,7 @@
 namespace Larfree\Exceptions;
 
 use Throwable;
-use Larfree\Support\ApiResponse;
+use Larfree\ApiResponse;
 use Illuminate\Validation\Validator;
 
 class ValidateException extends ApiException

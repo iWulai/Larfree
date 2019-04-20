@@ -1,6 +1,6 @@
 <?php
 
-namespace Larfree\Support;
+namespace Larfree;
 
 use ArrayAccess;
 use Illuminate\Support\Arr;

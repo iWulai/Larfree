@@ -1,6 +1,6 @@
 <?php
 
-namespace Larfree\Support;
+namespace Larfree;
 
 use Illuminate\Support\Arr;
 use Illuminate\Http\JsonResponse;

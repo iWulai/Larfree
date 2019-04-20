@@ -3,8 +3,8 @@
 namespace Larfree\Exceptions;
 
 use Exception;
-use Larfree\Support\ApiForm;
-use Larfree\Support\ApiResponse;
+use Larfree\ApiForm;
+use Larfree\ApiResponse;
 
 class ApiException extends Exception
 {

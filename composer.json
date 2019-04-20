@@ -24,7 +24,7 @@
             "Larfree\\": "src/"
         },
         "files": [
-            "src/Support/functions.php"
+            "src/functions.php"
         ]
     },
     "extra": {
