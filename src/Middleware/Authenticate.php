@@ -20,7 +20,7 @@ class Authenticate
      */
     public function handle(Request $request, Closure $next)
     {
-        if (! Auth::check() && ! auth_user_id())
+        if (! auth_user_id())
         {
             throw new UnauthorizedHttpException();
         }
