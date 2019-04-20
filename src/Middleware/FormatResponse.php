@@ -4,8 +4,8 @@ namespace Larfree\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Larfree\Support\ApiResponse;
 use Larfree\Support\ApiForm;
+use Larfree\Support\ApiResponse;
 use Illuminate\Pagination\AbstractPaginator;
 
 class FormatResponse

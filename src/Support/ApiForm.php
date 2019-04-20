@@ -18,18 +18,18 @@ class ApiForm
 
     protected $body = [];
 
-    public function __construct($data = null, string $message = null, int $status = ApiResponse::HTTP_OK, string $code = null)
+    public function __construct($data = null, string $message = null, int $status = ApiResponse::HTTP_OK, int $code = null)
     {
         $this->status = $status;
 
-        $this->code = $code ?? $this->code ?? ApiResponse::$statusTexts[$this->status] ?? null;
+        $this->code = $code;
 
         $this->data = $data;
 
-        $this->message = $message;
+        $this->message = $message ?? ApiResponse::$statusTexts[$this->status];
     }
 
-    public static function make($data = null, string $message = null, int $status = ApiResponse::HTTP_OK, string $code = null)
+    public static function make($data = null, string $message = null, int $status = ApiResponse::HTTP_OK, int $code = null)
     {
         return new static($data, $message, $status, $code);
     }
