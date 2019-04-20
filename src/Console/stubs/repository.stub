@@ -9,6 +9,6 @@ class DummyClass extends Repository
 {
     public function __construct(DummyModel $model)
     {
-        $this->model = $model;
+        parent::__construct($model);
     }
 }

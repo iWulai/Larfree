@@ -2,7 +2,6 @@
 
 namespace DummyNamespace;
 
-use Illuminate\Http\Request;
 use Larfree\Support\Controller;
 use App\Repositories\NamespaceDummyRepository;
 
@@ -39,6 +38,7 @@ class DummyClass extends Controller
      * @author iwulai
      *
      * @return \Larfree\Support\Model
+     *
      * @throws \Larfree\Exceptions\DatabaseSaveFailedException
      */
     public function store()
@@ -51,7 +51,9 @@ class DummyClass extends Controller
      *
      * @param int $id
      *
-     * @return \Larfree\Support\Model
+     * @return \Larfree\Support\Model|null
+     *
+     * @throws \Larfree\Exceptions\ModelNotFoundException
      */
     public function show(int $id)
     {
@@ -64,12 +66,13 @@ class DummyClass extends Controller
      * @param int $id
      *
      * @return \Larfree\Support\Model
+     *
      * @throws \Larfree\Exceptions\DatabaseSaveFailedException
-     * @throws \Larfree\Exceptions\PrimaryKeyNotFoundException
+     * @throws \Larfree\Exceptions\ModelNotFoundException
      */
     public function update(int $id)
     {
-        return $this->repository->query()->find($id, false)->save($this->request->all());
+        return $this->repository->find($id, false)->save($this->request->all());
     }
 
     /**
@@ -78,11 +81,12 @@ class DummyClass extends Controller
      * @param int $id
      *
      * @return \Larfree\Support\Model
+     *
      * @throws \Larfree\Exceptions\DatabaseSaveFailedException
      * @throws \Larfree\Exceptions\ModelNotFoundException
      */
     public function destroy(int $id)
     {
-        return $this->repository->query()->delete($id);
+        return $this->repository->delete($id);
     }
 }

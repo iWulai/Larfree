@@ -3,10 +3,10 @@
 namespace Larfree\Support;
 
 use Closure;
+use Exception;
 use Illuminate\Support\Arr;
 use Illuminate\Database\Eloquent\Builder;
-use Larfree\Exceptions\ModelNotFoundException;
-use Larfree\Exceptions\DatabaseSaveFailedException;
+use Larfree\Exceptions\{ModelNotFoundException, DatabaseSaveFailedException};
 
 abstract class Repository
 {
@@ -30,16 +30,11 @@ abstract class Repository
      */
     protected $builder;
 
-    public function setModel(Model $model)
+    public function __construct(Model $model)
     {
         $this->model = $model;
 
-        return $this;
-    }
-
-    public function getModel()
-    {
-        return $this->model;
+        $this->query();
     }
 
     public function setColumns(array $columns)
@@ -68,6 +63,11 @@ abstract class Repository
         $this->builder = $this->model->setAppends($this->appends)::query()->select($this->columns);
 
         return $this;
+    }
+
+    public function newQuery()
+    {
+        return $this->query();
     }
 
     /**
@@ -122,14 +122,15 @@ abstract class Repository
      *
      * @param array $attributes
      *
-     * @return $this
+     * @return Model
+     *
      * @throws DatabaseSaveFailedException
      */
     public function create(array $attributes)
     {
         $this->saveAttributes($attributes);
 
-        return $this;
+        return $this->model;
     }
 
     /**
@@ -138,7 +139,8 @@ abstract class Repository
      * @param int  $id
      * @param bool $return
      *
-     * @return $this|Model|null
+     * @return $this|Model
+     *
      * @throws ModelNotFoundException
      */
     public function find(int $id, bool $return = true)
@@ -162,7 +164,7 @@ abstract class Repository
     /**
      * @author iwulai
      *
-     * @return Model|null
+     * @return Builder|\Illuminate\Database\Eloquent\Model|object|null
      */
     public function first()
     {
@@ -181,14 +183,15 @@ abstract class Repository
      *
      * @param array $attributes
      *
-     * @return $this
+     * @return Model
+     *
      * @throws DatabaseSaveFailedException
      */
     public function save(array $attributes)
     {
         $this->saveAttributes($attributes);
 
-        return $this;
+        return $this->model;
     }
 
     /**
@@ -196,22 +199,77 @@ abstract class Repository
      *
      * @param int $id
      *
-     * @return Model
-     * @throws \Exception
+     * @return Model|Repository|null
+     *
+     * @throws DatabaseSaveFailedException
+     * @throws ModelNotFoundException
      */
     public function delete(int $id)
     {
         if ($model = $this->find($id))
         {
-            if ($model->delete())
+            try
             {
-                return $model;
+                if ($deleted = $model->delete())
+                {
+                    return $model;
+                }
+            }
+            catch (Exception $exception)
+            {
+                throw new ModelNotFoundException();
             }
 
-            throw new DatabaseSaveFailedException();
+            if (! $deleted) throw new DatabaseSaveFailedException();
         }
 
         throw new ModelNotFoundException();
+    }
+
+    /**
+     * @author iwulai
+     *
+     * @param array $parameters
+     * @param array $relations
+     * @param array $wheres
+     *
+     * @return Repository
+     */
+    public function parseWheres(array $parameters, array $relations, array $wheres = [])
+    {
+        foreach ($relations as $key => $relation)
+        {
+            if (Arr::get($parameters, $key))
+            {
+                $column = $relation['column'];
+
+                if (in_array($column, array_keys($wheres)))
+                {
+                    $columnValue = $wheres[$column]['value'];
+
+                    if (is_array($columnValue))
+                    {
+                        $wheres[$column]['value'][] = $relation['value'];
+                    }
+                    else
+                    {
+                        $wheres[$column]['operator'] = 'in';
+
+                        $wheres[$column]['value'] = [$columnValue, $relation['value']];
+                    }
+                }
+                else
+                {
+                    $where['operator'] = '=';
+
+                    $where['value'] = $relation['value'];
+
+                    $wheres[$column] = $where;
+                }
+            }
+        }
+
+        return $wheres ? $this->wheres($wheres) : $this;
     }
 
     /**
@@ -316,6 +374,7 @@ abstract class Repository
      * @param array $attributes
      *
      * @return $this
+     *
      * @throws DatabaseSaveFailedException
      */
     protected function saveAttributes(array $attributes)
