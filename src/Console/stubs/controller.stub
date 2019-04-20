@@ -26,32 +26,32 @@ class DummyClass extends Controller
     }
 
     /**
-     * @param Request $request
+     * @author iwulai
      *
-     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator|\Illuminate\Database\Eloquent\Collection
-     * @throws
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public function index(Request $request)
+    public function index()
     {
-        return $this->repository->paginate($request->get('per-page'));
+        return $this->repository->paginate($this->paginator->perPage);
     }
 
     /**
-     * @param Request $request
+     * @author iwulai
      *
      * @return \Larfree\Support\Model
-     * @throws
+     * @throws \Larfree\Exceptions\DatabaseSaveFailedException
      */
-    public function store(Request $request)
+    public function store()
     {
-        return $this->repository->create($request->all())->getModel();
+        return $this->repository->create($this->request->all())->getModel();
     }
 
     /**
+     * @author iwulai
+     *
      * @param int $id
      *
      * @return \Larfree\Support\Model
-     * @throws
      */
     public function show(int $id)
     {
@@ -59,22 +59,27 @@ class DummyClass extends Controller
     }
 
     /**
-     * @param Request $request
-     * @param int     $id
+     * @author iwulai
      *
-     * @return \Larfree\Support\Model
-     * @throws
-     */
-    public function update(Request $request, int $id)
-    {
-        return $this->repository->find($id)->save($request->all())->getModel();
-    }
-
-    /**
      * @param int $id
      *
      * @return \Larfree\Support\Model
-     * @throws
+     * @throws \Larfree\Exceptions\DatabaseSaveFailedException
+     * @throws \Larfree\Exceptions\PrimaryKeyNotFoundException
+     */
+    public function update(int $id)
+    {
+        return $this->repository->find($id)->save($this->request->all())->getModel();
+    }
+
+    /**
+     * @author iwulai
+     *
+     * @param int $id
+     *
+     * @return \Larfree\Support\Model
+     * @throws \Larfree\Exceptions\DatabaseSaveFailedException
+     * @throws \Larfree\Exceptions\ModelNotFoundException
      */
     public function destroy(int $id)
     {

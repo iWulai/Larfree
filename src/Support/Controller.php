@@ -3,10 +3,10 @@
 namespace Larfree\Support;
 
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Validator;
 use Larfree\Exceptions\ValidateException;
 use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Support\Facades\Request as BaseRequest;
 
 abstract class Controller extends BaseController
 {
@@ -31,6 +31,11 @@ abstract class Controller extends BaseController
     ];
 
     /**
+     * @var Request
+     */
+    protected $request;
+
+    /**
      * @var Paginator
      */
     protected $paginator;
@@ -47,7 +52,7 @@ abstract class Controller extends BaseController
      */
     public function callAction($method, $parameters)
     {
-        $request = Request::instance();
+        $request = BaseRequest::instance();
 
         $this->paginator = Paginator::make($request->get('per_page', $request->get('page')));
 
@@ -66,10 +71,7 @@ abstract class Controller extends BaseController
                 throw new ValidateException($validator);
             }
 
-            if (in_array($request->method(), ['POST', 'PUT']))
-            {
-                $request->replace($validator->validated());
-            }
+            $this->request = Request::make($validator->validated());
         }
 
         return call_user_func_array([$this, $method], $parameters);
