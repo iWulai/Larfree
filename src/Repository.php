@@ -2,7 +2,6 @@
 
 namespace Larfree;
 
-use Closure;
 use Exception;
 use Illuminate\Support\Arr;
 use Illuminate\Database\Eloquent\Builder;
@@ -28,7 +27,7 @@ abstract class Repository
     /**
      * @var Builder
      */
-    protected $builder;
+    protected $query;
 
     public function __construct(Model $model)
     {
@@ -60,7 +59,7 @@ abstract class Repository
 
     public function query()
     {
-        $this->builder = $this->model->setAppends($this->appends)->newQuery()->select($this->columns);
+        $this->query = $this->model->setAppends($this->appends)->newQuery()->select($this->columns);
 
         return $this;
     }
@@ -77,7 +76,7 @@ abstract class Repository
      */
     public function get()
     {
-        return $this->builder->get();
+        return $this->query->get();
     }
 
     /**
@@ -89,7 +88,7 @@ abstract class Repository
      */
     public function findMany(array $ids)
     {
-        return $this->builder->findMany($ids);
+        return $this->query->findMany($ids);
     }
 
     /**
@@ -101,7 +100,7 @@ abstract class Repository
      */
     public function paginate(int $perPage = null)
     {
-        return $this->builder->paginate($perPage);
+        return $this->query->paginate($perPage);
     }
 
     /**
@@ -114,7 +113,7 @@ abstract class Repository
      */
     public function pluck(string $column, string $key = null)
     {
-        return $this->builder->pluck($column, $key);
+        return $this->query->pluck($column, $key);
     }
 
     /**
@@ -148,7 +147,7 @@ abstract class Repository
         /**
          * @var Model $model
          */
-        $model = $this->builder->find($id);
+        $model = $this->query->find($id);
 
         $instanceof = $model instanceof Model;
 
@@ -168,7 +167,7 @@ abstract class Repository
      */
     public function first()
     {
-        $model = $this->builder->first();
+        $model = $this->query->first();
 
         if ($model instanceof Model)
         {
@@ -229,126 +228,34 @@ abstract class Repository
     /**
      * @author iwulai
      *
-     * @param array $parameters
-     * @param array $relations
      * @param array $wheres
-     * @param array $defaults
-     * @param array $finalColumns
-     *
-     * @return Repository
-     */
-    public function parseWheres(array $parameters, array $relations, array $wheres = [], array $defaults = [], array $finalColumns = [])
-    {
-        foreach ($relations as $key => $relation)
-        {
-            if (Arr::get($parameters, $key))
-            {
-                $column = $relation['column'];
-
-                if (Arr::get($relation, 'final', false) === true)
-                {
-                    $wheres[$column]['operator'] = '=';
-
-                    $wheres[$column]['value'] = $relation['value'];
-
-                    $finalColumns[] = $column;
-
-                    continue;
-                }
-
-                $inWheres = in_array($column, array_keys($wheres));
-
-                if (in_array($column, $finalColumns))
-                {
-                    if (! $inWheres)
-                    {
-                        $where['operator'] = '=';
-
-                        $where['value'] = $relation['value'];
-
-                        $wheres[$column] = $where;
-                    }
-
-                    continue;
-                }
-
-                if ($inWheres)
-                {
-                    $columnValue = $wheres[$column]['value'];
-
-                    if (is_array($columnValue))
-                    {
-                        $wheres[$column]['value'][] = $relation['value'];
-                    }
-                    else
-                    {
-                        $wheres[$column]['operator'] = 'in';
-
-                        $wheres[$column]['value'] = [$columnValue, $relation['value']];
-                    }
-                }
-                else
-                {
-                    $where['operator'] = '=';
-
-                    $where['value'] = $relation['value'];
-
-                    $wheres[$column] = $where;
-                }
-            }
-        }
-
-        if ($defaults) $wheres = array_merge($wheres, array_diff_key($defaults, $wheres));
-
-        return $wheres ? $this->wheres($wheres) : $this;
-    }
-
-    /**
-     * @author iwulai
-     *
-     * @param array $wheres
+     * @param bool  $and
      *
      * @return $this
      */
-    public function wheres(array $wheres)
+    public function wheres(array $wheres, bool $and = true)
     {
+        $query = $this->model->newModelQuery()->getQuery();
+
         foreach ($wheres as $column => $where)
         {
             if (is_array($where))
             {
-                if (($callback = Arr::get($where, 'callback')) && $callback instanceof Closure)
-                {
-                    $callback($this->builder);
-                }
-                else
-                {
-                    $operator = Arr::get($where, 'operator');
+                $operator = Arr::get($where, 'operator');
 
-                    $value = Arr::get($where, 'value');
+                $value = Arr::get($where, 'value');
 
-                    $boolean = Arr::get($where, 'boolean', 'and');
+                $boolean = Arr::get($where, 'boolean', 'and');
 
-                    switch ($operator)
-                    {
-                        default :
-                            $this->builder->where($column, $operator, $value, $boolean);
-                        break;
-
-                        case 'in' :
-                            $this->builder->whereIn($column, $value, $boolean);
-                        break;
-
-                        case 'not in' :
-                            $this->builder->whereNotIn($column, $value, $boolean);
-                        break;
-                    }
-                }
+                $query->where($column, $operator, $value, $boolean);
             }
             else
             {
-                $this->builder->where($column, $where);
+                $query->where($column, $where);
             }
         }
+
+        $this->query->addNestedWhereQuery($query, $and ? 'and' : 'or');
 
         return $this;
     }
@@ -366,7 +273,7 @@ abstract class Repository
      */
     public function between($column, $left, $right, $boolean = 'and', $not = false)
     {
-        $this->builder->whereBetween($column, [$left, $right], $boolean, $not);
+        $this->query->whereBetween($column, [$left, $right], $boolean, $not);
 
         return $this;
     }
@@ -380,7 +287,7 @@ abstract class Repository
      */
     public function with(array $relations)
     {
-        $this->builder->with($relations);
+        $this->query->with($relations);
 
         return $this;
     }
@@ -394,7 +301,7 @@ abstract class Repository
      */
     public function withCount(array $relations)
     {
-        $this->builder->withCount($relations);
+        $this->query->withCount($relations);
 
         return $this;
     }
