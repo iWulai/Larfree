@@ -36,6 +36,11 @@ abstract class Repository
         $this->query();
     }
 
+    public function getModelTable()
+    {
+        return $this->model->getTable();
+    }
+
     public function setColumns(array $columns)
     {
         $this->columns = $columns;
