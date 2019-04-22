@@ -1,9 +1,11 @@
 <?php
 
 return [
-    'restful' => true,
+
+    'restful' => env('LARFREE_RESTFUL', true),
 
     'auth' => [
         'user_id' => env('LARFREE_AUTH_USER_ID', null),
     ],
+
 ];
