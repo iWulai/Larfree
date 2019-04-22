@@ -221,6 +221,18 @@ abstract class Repository
     /**
      * @author iwulai
      *
+     * @param array $values
+     *
+     * @return int
+     */
+    public function update(array $values)
+    {
+        return $this->query->update($values);
+    }
+
+    /**
+     * @author iwulai
+     *
      * @param array $wheres
      * @param bool  $and
      *
