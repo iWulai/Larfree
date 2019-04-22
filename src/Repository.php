@@ -182,40 +182,6 @@ abstract class Repository
     /**
      * @author iwulai
      *
-     * @param string $keyword
-     * @param array  $columns
-     * @param bool   $leftLike
-     *
-     * @return $this
-     */
-    public function search(string $keyword, array $columns, bool $leftLike = false)
-    {
-        $query = $this->model->newModelQuery()->getQuery();
-
-        $keyword = $keyword . '%';
-
-        if ($leftLike)
-        {
-            $keyword = '%' . $keyword;
-        }
-
-        $boolean = 'and';
-
-        foreach ($columns as $column)
-        {
-            $query->where($column, 'like', $keyword, $boolean);
-
-            $boolean = 'or';
-        }
-
-        $this->query->addNestedWhereQuery($query);
-
-        return $this;
-    }
-
-    /**
-     * @author iwulai
-     *
      * @param array $attributes
      *
      * @return Model
@@ -276,23 +242,6 @@ abstract class Repository
     /**
      * @author iwulai
      *
-     * @param string|array|\Closure $column
-     * @param int|string|null       $operator
-     * @param int|string|array|null $value
-     * @param string                $boolean
-     *
-     * @return $this
-     */
-    public function where($column, $operator = null, $value = null, string $boolean = 'and')
-    {
-        $this->query->where($column, $operator, $value, $boolean);
-
-        return $this;
-    }
-
-    /**
-     * @author iwulai
-     *
      * @param array $wheres
      * @param bool  $and
      *
@@ -321,6 +270,23 @@ abstract class Repository
         }
 
         $this->query->addNestedWhereQuery($query, $and ? 'and' : 'or');
+
+        return $this;
+    }
+
+    /**
+     * @author iwulai
+     *
+     * @param string|array|\Closure $column
+     * @param int|string|null       $operator
+     * @param int|string|array|null $value
+     * @param string                $boolean
+     *
+     * @return $this
+     */
+    public function where($column, $operator = null, $value = null, string $boolean = 'and')
+    {
+        $this->query->where($column, $operator, $value, $boolean);
 
         return $this;
     }
@@ -363,6 +329,40 @@ abstract class Repository
     /**
      * @author iwulai
      *
+     * @param string $keyword
+     * @param array  $columns
+     * @param bool   $leftLike
+     *
+     * @return $this
+     */
+    public function search(string $keyword, array $columns, bool $leftLike = false)
+    {
+        $query = $this->model->newModelQuery()->getQuery();
+
+        $keyword = $keyword . '%';
+
+        if ($leftLike)
+        {
+            $keyword = '%' . $keyword;
+        }
+
+        $boolean = 'and';
+
+        foreach ($columns as $column)
+        {
+            $query->where($column, 'like', $keyword, $boolean);
+
+            $boolean = 'or';
+        }
+
+        $this->query->addNestedWhereQuery($query);
+
+        return $this;
+    }
+
+    /**
+     * @author iwulai
+     *
      * @param array $relations
      *
      * @return $this
@@ -384,6 +384,18 @@ abstract class Repository
     public function withCount(array $relations)
     {
         $this->query->withCount($relations);
+
+        return $this;
+    }
+
+    /**
+     * @author iwulai
+     *
+     * @return $this
+     */
+    protected function query()
+    {
+        $this->query = $this->model->setAppends($this->appends)->newQuery()->select($this->columns);
 
         return $this;
     }
@@ -422,18 +434,6 @@ abstract class Repository
         {
             $this->model->setAttribute($attribute, $value);
         }
-
-        return $this;
-    }
-
-    /**
-     * @author iwulai
-     *
-     * @return $this
-     */
-    protected function query()
-    {
-        $this->query = $this->model->setAppends($this->appends)->newQuery()->select($this->columns);
 
         return $this;
     }
