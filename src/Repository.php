@@ -183,6 +183,40 @@ abstract class Repository
     /**
      * @author iwulai
      *
+     * @param string $keyword
+     * @param array  $columns
+     * @param bool   $leftLike
+     *
+     * @return $this
+     */
+    public function search(string $keyword, array $columns, bool $leftLike = false)
+    {
+        $query = $this->model->newModelQuery()->getQuery();
+
+        $keyword = $keyword . '%';
+
+        if ($leftLike)
+        {
+            $keyword = '%' . $keyword;
+        }
+
+        $boolean = 'and';
+
+        foreach ($columns as $column)
+        {
+            $query->where($column, 'like', $keyword, $boolean);
+
+            $boolean = 'or';
+        }
+
+        $this->query->addNestedWhereQuery($query);
+
+        return $this;
+    }
+
+    /**
+     * @author iwulai
+     *
      * @param array $attributes
      *
      * @return Model
