@@ -6,7 +6,7 @@ use Exception;
 use Larfree\ApiForm;
 use Larfree\ApiResponse;
 
-class ApiException extends Exception
+abstract class ApiException extends Exception
 {
     protected $data = null;
 
@@ -14,15 +14,15 @@ class ApiException extends Exception
 
     protected $code = null;
 
-    protected $status = null;
+    protected $status = ApiResponse::HTTP_UNPROCESSABLE_ENTITY;
 
     public function __construct(string $message = null, int $status = null, $data = null, int $code = null)
     {
         $this->data = $data ?: $this->data;
 
-        $this->status = $status ?: $this->status ?: ApiResponse::HTTP_UNPROCESSABLE_ENTITY;
+        $this->status = $status ?: $this->status;
 
-        $this->message = $message ?: $this->message ?: null;
+        $this->message = $message ?: $this->message;
 
         $this->code = $code ?: $this->code;
 
