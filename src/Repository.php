@@ -238,6 +238,23 @@ abstract class Repository
     /**
      * @author iwulai
      *
+     * @param string|array|\Closure $column
+     * @param int|string|null       $operator
+     * @param int|string|array|null $value
+     * @param string                $boolean
+     *
+     * @return $this
+     */
+    public function where($column, $operator = null, $value = null, string $boolean = 'and')
+    {
+        $this->query->where($column, $operator, $value, $boolean);
+
+        return $this;
+    }
+
+    /**
+     * @author iwulai
+     *
      * @param array $wheres
      * @param bool  $and
      *
