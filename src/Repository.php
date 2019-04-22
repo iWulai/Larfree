@@ -57,13 +57,6 @@ abstract class Repository
         return $this;
     }
 
-    public function query()
-    {
-        $this->query = $this->model->setAppends($this->appends)->newQuery()->select($this->columns);
-
-        return $this;
-    }
-
     public function newQuery()
     {
         return $this->query();
@@ -271,9 +264,26 @@ abstract class Repository
      *
      * @return $this
      */
-    public function between($column, $left, $right, $boolean = 'and', $not = false)
+    public function whereBetween(string $column, $left, $right, string $boolean = 'and', bool $not = false)
     {
         $this->query->whereBetween($column, [$left, $right], $boolean, $not);
+
+        return $this;
+    }
+
+    /**
+     * @author iwulai
+     *
+     * @param string $column
+     * @param array  $values
+     * @param string $boolean
+     * @param bool   $not
+     *
+     * @return $this
+     */
+    public function whereIn(string $column, array $values, string $boolean = 'and', bool $not = false)
+    {
+        $this->query->whereIn($column, $values, $boolean, $not);
 
         return $this;
     }
@@ -340,6 +350,18 @@ abstract class Repository
         {
             $this->model->setAttribute($attribute, $value);
         }
+
+        return $this;
+    }
+
+    /**
+     * @author iwulai
+     *
+     * @return $this
+     */
+    protected function query()
+    {
+        $this->query = $this->model->setAppends($this->appends)->newQuery()->select($this->columns);
 
         return $this;
     }
