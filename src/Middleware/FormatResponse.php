@@ -32,7 +32,7 @@ class FormatResponse
 
         if ($content instanceof AbstractPaginator) return ApiResponse::paginate($content->toArray());
 
-        $form = new ApiForm(null, null, $status);
+        $form = new ApiForm(null, $status);
 
         if (is_string($content) || is_numeric($content))
         {

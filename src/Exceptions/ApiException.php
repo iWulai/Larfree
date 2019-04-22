@@ -18,13 +18,13 @@ class ApiException extends Exception
 
     public function __construct(string $message = null, int $status = null, $data = null, int $code = null)
     {
-        $this->status = $status ?: $this->status ?: ApiResponse::HTTP_UNPROCESSABLE_ENTITY;
+        $this->data = $data ?: $this->data;
 
-        $this->code = $code ?: $this->code;
+        $this->status = $status ?: $this->status ?: ApiResponse::HTTP_UNPROCESSABLE_ENTITY;
 
         $this->message = $message ?: $this->message ?: null;
 
-        $this->data = $data ?: $this->data;
+        $this->code = $code ?: $this->code;
 
         if (false) parent::__construct();
     }
@@ -41,6 +41,6 @@ class ApiException extends Exception
 
     public function render()
     {
-        return ApiResponse::make(new ApiForm($this->data, $this->message, $this->status, $this->code));
+        return ApiResponse::make(new ApiForm($this->data, $this->status, $this->message, $this->code));
     }
 }

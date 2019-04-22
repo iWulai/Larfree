@@ -18,7 +18,7 @@ class ApiForm
 
     protected $body = [];
 
-    public function __construct($data = null, string $message = null, int $status = ApiResponse::HTTP_OK, int $code = null)
+    public function __construct($data = null, int $status = ApiResponse::HTTP_OK, string $message = null, int $code = null)
     {
         $this->status = $status;
 
@@ -29,9 +29,9 @@ class ApiForm
         $this->message = $message ?? ApiResponse::$statusTexts[$this->status];
     }
 
-    public static function make($data = null, string $message = null, int $status = ApiResponse::HTTP_OK, int $code = null)
+    public static function make($data = null, int $status = ApiResponse::HTTP_OK, string $message = null, int $code = null)
     {
-        return new static($data, $message, $status, $code);
+        return new static($data, $status, $message, $code);
     }
 
     public function setStatus(int $status)
