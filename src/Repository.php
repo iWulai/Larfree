@@ -4,7 +4,6 @@ namespace Larfree;
 
 use Exception;
 use Illuminate\Support\Arr;
-use Illuminate\Database\Eloquent\Builder;
 use Larfree\Exceptions\{ModelNotFoundException, DatabaseSaveFailedException};
 
 abstract class Repository
@@ -25,7 +24,7 @@ abstract class Repository
     protected $appends = [];
 
     /**
-     * @var Builder
+     * @var \Illuminate\Database\Eloquent\Builder
      */
     protected $query;
 
@@ -141,7 +140,7 @@ abstract class Repository
      * @param int  $id
      * @param bool $return
      *
-     * @return $this|Model
+     * @return $this|Model|null
      *
      * @throws ModelNotFoundException
      */
@@ -166,7 +165,7 @@ abstract class Repository
     /**
      * @author iwulai
      *
-     * @return Builder|\Illuminate\Database\Eloquent\Model|object|null
+     * @return Model
      */
     public function first()
     {
