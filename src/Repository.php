@@ -67,6 +67,11 @@ abstract class Repository
         return $this->query();
     }
 
+    public function getQuery()
+    {
+        return $this->query;
+    }
+
     /**
      * @author iwulai
      *
