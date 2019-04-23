@@ -30,7 +30,8 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Larfree\\Providers\\LarfreeServiceProvider"
+                "Larfree\\Providers\\LarfreeServiceProvider",
+                "Larfree\\Providers\\ValidateServiceProvider"
             ]
         }
     }
