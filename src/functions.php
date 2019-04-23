@@ -16,13 +16,13 @@ if (! function_exists('auth_user_id'))
                 }
             }
 
-            return intval($id);
+            $userId = $id;
         }
         else
         {
             Config::set('larfree.auth.user_id', $userId);
-
-            return $userId;
         }
+
+        return intval($userId);
     }
 }
