@@ -2,7 +2,7 @@
 
 namespace DummyNamespace;
 
-use Larfree\Support\Controller;
+use Larfree\Controller;
 use App\Repositories\NamespaceDummyRepository;
 
 class DummyClass extends Controller

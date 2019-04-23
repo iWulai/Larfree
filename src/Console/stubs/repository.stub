@@ -2,7 +2,7 @@
 
 namespace DummyNamespace;
 
-use Larfree\Support\Repository;
+use Larfree\Repository;
 use App\Models\NamespaceDummyModel;
 
 class DummyClass extends Repository

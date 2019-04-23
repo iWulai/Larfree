@@ -2,7 +2,7 @@
 
 namespace DummyNamespace;
 
-use Larfree\Support\Model;
+use Larfree\Model;
 
 class DummyClass extends Model
 {
