@@ -8,15 +8,7 @@ if (! function_exists('auth_user_id'))
     {
         if (is_null($userId))
         {
-            if (! $id = Auth::id())
-            {
-                if (Config::get('app.debug', false))
-                {
-                    $id = Config::get('larfree.auth.user_id', null);
-                }
-            }
-
-            $userId = $id;
+            $userId = Auth::id() ?: Config::get('larfree.auth.user_id', null);
         }
         else
         {
