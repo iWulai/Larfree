@@ -2,7 +2,6 @@
 
 namespace Larfree;
 
-use Exception;
 use Illuminate\Support\Arr;
 use Larfree\Exceptions\ApiErrorException;
 
@@ -27,10 +26,6 @@ abstract class Repository
      * @var \Illuminate\Database\Eloquent\Builder
      */
     protected $query;
-
-    protected const ERROR_MESSAGE_DATABASE_SAVE_FAILED = '服务异常！数据保存失败，请重试。';
-
-    protected const ERROR_MESSAGE_MODEL_NOT_FOUND = '数据异常！该数据不存在或已删除。';
 
     public function __construct(Model $model)
     {
@@ -161,7 +156,7 @@ abstract class Repository
 
         if ($return) return $model;
 
-        if (! $instanceof) throw new ApiErrorException(static::ERROR_MESSAGE_MODEL_NOT_FOUND);
+        if (! $instanceof) $this->notFound();
 
         return $this;
     }
@@ -204,30 +199,27 @@ abstract class Repository
      *
      * @param int $id
      *
-     * @return Model|Repository|null
+     * @return Model
      *
      * @throws ApiErrorException
      */
     public function delete(int $id)
     {
-        if ($model = $this->find($id))
-        {
-            try
-            {
-                if ($deleted = $model->delete())
-                {
-                    return $model;
-                }
-            }
-            catch (Exception $exception)
-            {
-                throw new ApiErrorException(static::ERROR_MESSAGE_MODEL_NOT_FOUND);
-            }
+        $model = $this->find($id);
 
-            if (! $deleted) throw new ApiErrorException(static::ERROR_MESSAGE_DATABASE_SAVE_FAILED);
+        if (is_null($model))
+        {
+            $this->notFound();
         }
 
-        throw new ApiErrorException(static::ERROR_MESSAGE_MODEL_NOT_FOUND);
+        if (! $model->delete())
+        {
+            $this->saveFailed();
+        }
+
+        $this->model = $model;
+
+        return $model;
     }
 
     /**
@@ -394,6 +386,47 @@ abstract class Repository
     /**
      * @author iwulai
      *
+     * @param string   $message
+     * @param int|null $status
+     *
+     * @throws ApiErrorException
+     */
+    public function throw(string $message, int $status = null)
+    {
+        throw new ApiErrorException($message, $status);
+    }
+
+    /**
+     * @author iwulai
+     *
+     * @return $this
+     *
+     * @throws ApiErrorException
+     */
+    public function saveFailed()
+    {
+        $this->throw('服务异常！数据保存失败，请重试。');
+
+        return $this;
+    }
+
+    /**
+     * @author iwulai
+     *
+     * @return $this
+     *
+     * @throws ApiErrorException
+     */
+    public function notFound()
+    {
+        $this->throw('数据异常！该数据不存在或已删除。');
+
+        return $this;
+    }
+
+    /**
+     * @author iwulai
+     *
      * @return $this
      */
     protected function query()
@@ -418,7 +451,7 @@ abstract class Repository
 
         if (! $this->model->save())
         {
-            throw new ApiErrorException(static::ERROR_MESSAGE_DATABASE_SAVE_FAILED);
+            $this->saveFailed();
         }
 
         return $this;

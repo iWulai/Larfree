@@ -14,7 +14,7 @@ abstract class ApiException extends Exception
 
     protected $code = null;
 
-    protected $status = ApiResponse::HTTP_UNPROCESSABLE_ENTITY;
+    protected $status = null;
 
     public function __construct(string $message = null, int $status = null, $data = null, int $code = null)
     {
