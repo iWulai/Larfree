@@ -26,13 +26,14 @@ class Authenticate
     {
         if (! auth_user_id())
         {
-            if (! Auth::check())
-            {
-                throw new AuthenticationExpired();
-            }
-
             throw new UnauthorizedException();
         }
+
+        if (! Auth::check())
+        {
+            throw new AuthenticationExpired();
+        }
+
 
         return $next($request);
     }
