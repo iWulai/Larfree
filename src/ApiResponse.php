@@ -30,9 +30,9 @@ class ApiResponse extends JsonResponse
 
         if ($appends)
         {
-            foreach ($appends as $append => $default)
+            foreach ($appends as $key => $value)
             {
-                $resource->addBody($append, Arr::get($content, $append, $default));
+                $resource->addBody($key, $value);
             }
         }
 
