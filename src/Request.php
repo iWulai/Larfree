@@ -34,6 +34,21 @@ class Request implements ArrayAccess
         return $this->attributes;
     }
 
+    public function pull(string $key, $default = null)
+    {
+        return Arr::pull($this->attributes, $key, $default);
+    }
+
+    public function only(array $keys)
+    {
+        return Arr::only($this->attributes, $keys);
+    }
+
+    public function except(array $keys)
+    {
+        return Arr::except($this->attributes, $keys);
+    }
+
     public function offsetExists($offset)
     {
         return Arr::has($this->attributes, $offset);
