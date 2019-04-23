@@ -324,6 +324,49 @@ abstract class Repository
     /**
      * @author iwulai
      *
+     * @param string $column
+     * @param string $direction
+     *
+     * @return $this
+     */
+    public function orderBy(string $column, string $direction = 'asc')
+    {
+        $this->query->orderBy($column, $direction);
+
+        return $this;
+    }
+
+    /**
+     * @author iwulai
+     *
+     * @param string $column
+     *
+     * @return $this
+     */
+    public function orderByDesc(string $column)
+    {
+        $this->query->orderByDesc($column);
+
+        return $this;
+    }
+
+    /**
+     * @author iwulai
+     *
+     * @param mixed ...$groups
+     *
+     * @return $this
+     */
+    public function groupBy(...$groups)
+    {
+        $this->query->groupBy($groups);
+
+        return $this;
+    }
+
+    /**
+     * @author iwulai
+     *
      * @param string $keyword
      * @param array  $columns
      * @param bool   $leftLike
