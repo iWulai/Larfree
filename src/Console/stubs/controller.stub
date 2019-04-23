@@ -37,9 +37,9 @@ class DummyClass extends Controller
     /**
      * @author iwulai
      *
-     * @return \Larfree\Support\Model
+     * @return \Larfree\Model
      *
-     * @throws \Larfree\Exceptions\DatabaseSaveFailedException
+     * @throws \Larfree\Exceptions\ApiErrorException
      */
     public function store()
     {
@@ -51,9 +51,9 @@ class DummyClass extends Controller
      *
      * @param int $id
      *
-     * @return \Larfree\Support\Model|null
+     * @return \Larfree\Model
      *
-     * @throws \Larfree\Exceptions\ModelNotFoundException
+     * @throws \Larfree\Exceptions\ApiErrorException
      */
     public function show(int $id)
     {
@@ -65,10 +65,9 @@ class DummyClass extends Controller
      *
      * @param int $id
      *
-     * @return \Larfree\Support\Model
+     * @return \Larfree\Model
      *
-     * @throws \Larfree\Exceptions\DatabaseSaveFailedException
-     * @throws \Larfree\Exceptions\ModelNotFoundException
+     * @throws \Larfree\Exceptions\ApiErrorException
      */
     public function update(int $id)
     {
@@ -80,10 +79,9 @@ class DummyClass extends Controller
      *
      * @param int $id
      *
-     * @return \Larfree\Support\Model
+     * @return \Larfree\Model
      *
-     * @throws \Larfree\Exceptions\DatabaseSaveFailedException
-     * @throws \Larfree\Exceptions\ModelNotFoundException
+     * @throws \Larfree\Exceptions\ApiErrorException
      */
     public function destroy(int $id)
     {
