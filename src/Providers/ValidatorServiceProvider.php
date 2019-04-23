@@ -12,19 +12,12 @@ class ValidatorServiceProvider extends ServiceProvider
     protected $telephoneRegex = '/(^(0[0-9]{2}-?)([2-9][0-9]{7})(-[0-9]{1,4})?$)|(^(0[0-9]{3}-?)([2-9][0-9]{6})(-[0-9]{1,4})?$)|(^400(-?[0-9]{3,4}){2}$)/';
 
     /**
-     * @var \Illuminate\Contracts\Translation\Translator
-     */
-    protected $translator;
-
-    /**
      * Bootstrap services.
      *
      * @return void
      */
     public function boot()
     {
-        $this->translator = $this->app['translator'];
-
         $this->cellphone();
 
         $this->telephone();
@@ -42,7 +35,7 @@ class ValidatorServiceProvider extends ServiceProvider
 
         Validator::replacer('cellphone', function ($message, $attribute, $rule, $parameters)
             {
-                return $this->translator->trans('validation.cellphone') ?: '手机号码格式错误！请填写正确的手机号码。';
+                return $message === 'validation.' . $rule ? '手机号码格式错误！请填写正确的手机号码。' : $message;
             }
         );
     }
@@ -57,7 +50,7 @@ class ValidatorServiceProvider extends ServiceProvider
 
         Validator::replacer('telephone', function ($message, $attribute, $rule, $parameters)
             {
-                return $this->translator->trans('validation.telephone') ?: '座机号码格式错误！请填写正确的座机号码（分机号）或400电话。';
+                return $message === 'validation.' . $rule ? '座机号码格式错误！请填写正确的座机号码（分机号）或400电话。' : $message;
             }
         );
     }
@@ -77,7 +70,7 @@ class ValidatorServiceProvider extends ServiceProvider
 
         Validator::replacer('phone', function ($message, $attribute, $rule, $parameters)
             {
-                return $this->translator->trans('validation.phone') ?: '电话号码格式错误！请填写正确的电话号码。允许手机号码，座机号码（分机号），400号码';
+                return $message === 'validation.' . $rule ? '电话号码格式错误！请填写正确的电话号码。允许手机号码，座机号码（分机号），400号码' : $message;
             }
         );
     }
