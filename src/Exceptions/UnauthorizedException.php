@@ -10,5 +10,5 @@ class UnauthorizedException extends ApiException
 
     protected $status = ApiResponse::HTTP_UNAUTHORIZED;
 
-    protected $code = 40100;
+    protected $code = 40101;
 }

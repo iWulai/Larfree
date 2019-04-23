@@ -10,5 +10,5 @@ class AuthenticationExpired extends ApiException
 
     protected $status = ApiResponse::HTTP_UNAUTHORIZED;
 
-    protected $code = 40101;
+    protected $code = 40104;
 }
