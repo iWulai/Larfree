@@ -20,13 +20,13 @@ class ApiResponse extends JsonResponse
         return new static($form->getBody(), Config::get('larfree.restful', true) === true ? $form->getStatus() : static::HTTP_OK, static::HEADERS);
     }
 
-    public static function paginate(array $content, array $appends = null)
+    public static function paginate(array $paginatorContent, array $appends = null)
     {
-        $resource = new ApiForm(Arr::get($content, 'data', []));
+        $resource = new ApiForm(Arr::get($paginatorContent, 'data', []));
 
-        $resource->addBody('link', Arr::only($content, ['first_page_url', 'last_page_url', 'prev_page_url', 'next_page_url']));
+        $resource->addBody('link', Arr::only($paginatorContent, ['first_page_url', 'last_page_url', 'prev_page_url', 'next_page_url']));
 
-        $resource->addBody('meta', Arr::only($content, ['current_page', 'last_page', 'per_page', 'total']));
+        $resource->addBody('meta', Arr::only($paginatorContent, ['current_page', 'last_page', 'per_page', 'total']));
 
         if ($appends)
         {
