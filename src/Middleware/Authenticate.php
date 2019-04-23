@@ -4,7 +4,7 @@ namespace Larfree\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Larfree\Exceptions\UnauthorizedHttpException;
+use Larfree\Exceptions\UnauthorizedException;
 
 class Authenticate
 {
@@ -15,13 +15,13 @@ class Authenticate
      * @param Closure $next
      *
      * @return mixed
-     * @throws UnauthorizedHttpException
+     * @throws UnauthorizedException
      */
     public function handle(Request $request, Closure $next)
     {
         if (! auth_user_id())
         {
-            throw new UnauthorizedHttpException();
+            throw new UnauthorizedException();
         }
 
         return $next($request);

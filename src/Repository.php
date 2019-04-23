@@ -4,7 +4,7 @@ namespace Larfree;
 
 use Exception;
 use Illuminate\Support\Arr;
-use Larfree\Exceptions\{ModelNotFoundException, DatabaseSaveFailedException};
+use Larfree\Exceptions\ApiErrorException;
 
 abstract class Repository
 {
@@ -27,6 +27,10 @@ abstract class Repository
      * @var \Illuminate\Database\Eloquent\Builder
      */
     protected $query;
+
+    protected const ERROR_MESSAGE_DATABASE_SAVE_FAILED = '数据异常！该数据不存在或已删除。';
+
+    protected const ERROR_MESSAGE_MODEL_NOT_FOUND = '数据异常！该数据不存在或已删除。';
 
     public function __construct(Model $model)
     {
@@ -125,7 +129,7 @@ abstract class Repository
      *
      * @return Model
      *
-     * @throws DatabaseSaveFailedException
+     * @throws ApiErrorException
      */
     public function create(array $attributes)
     {
@@ -140,9 +144,9 @@ abstract class Repository
      * @param int  $id
      * @param bool $return
      *
-     * @return $this|Model|null
+     * @return $this|Model
      *
-     * @throws ModelNotFoundException
+     * @throws ApiErrorException
      */
     public function find(int $id, bool $return = true)
     {
@@ -157,7 +161,7 @@ abstract class Repository
 
         if ($return) return $model;
 
-        if (! $instanceof) throw new ModelNotFoundException();
+        if (! $instanceof) throw new ApiErrorException(static::ERROR_MESSAGE_MODEL_NOT_FOUND);
 
         return $this;
     }
@@ -186,7 +190,7 @@ abstract class Repository
      *
      * @return Model
      *
-     * @throws DatabaseSaveFailedException
+     * @throws ApiErrorException
      */
     public function save(array $attributes)
     {
@@ -202,8 +206,7 @@ abstract class Repository
      *
      * @return Model|Repository|null
      *
-     * @throws DatabaseSaveFailedException
-     * @throws ModelNotFoundException
+     * @throws ApiErrorException
      */
     public function delete(int $id)
     {
@@ -218,13 +221,13 @@ abstract class Repository
             }
             catch (Exception $exception)
             {
-                throw new ModelNotFoundException();
+                throw new ApiErrorException(static::ERROR_MESSAGE_MODEL_NOT_FOUND);
             }
 
-            if (! $deleted) throw new DatabaseSaveFailedException();
+            if (! $deleted) throw new ApiErrorException(static::ERROR_MESSAGE_DATABASE_SAVE_FAILED);
         }
 
-        throw new ModelNotFoundException();
+        throw new ApiErrorException(static::ERROR_MESSAGE_MODEL_NOT_FOUND);
     }
 
     /**
@@ -407,7 +410,7 @@ abstract class Repository
      *
      * @return $this
      *
-     * @throws DatabaseSaveFailedException
+     * @throws ApiErrorException
      */
     protected function saveAttributes(array $attributes)
     {
@@ -415,7 +418,7 @@ abstract class Repository
 
         if (! $this->model->save())
         {
-            throw new DatabaseSaveFailedException();
+            throw new ApiErrorException(static::ERROR_MESSAGE_DATABASE_SAVE_FAILED);
         }
 
         return $this;

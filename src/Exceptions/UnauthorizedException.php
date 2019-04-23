@@ -4,7 +4,7 @@ namespace Larfree\Exceptions;
 
 use Larfree\ApiResponse;
 
-class UnauthorizedHttpException extends ApiException
+class UnauthorizedException extends ApiException
 {
     protected $message = '用户认证错误！未登录。';
 

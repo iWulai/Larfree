@@ -22,17 +22,13 @@ class FormatResponse
 
         if ($response instanceof ApiResponse) return $response;
 
-        $status = $response->getStatusCode();
-
-        if ($status >= ApiResponse::HTTP_INTERNAL_SERVER_ERROR) return $response;
-
         $content = $response->getOriginalContent();
 
         if ($content instanceof ApiForm) return ApiResponse::make($content);
 
         if ($content instanceof AbstractPaginator) return ApiResponse::paginate($content->toArray());
 
-        $form = new ApiForm(null, $status);
+        $form = new ApiForm(null, $response->getStatusCode());
 
         if (is_string($content) || is_numeric($content))
         {
