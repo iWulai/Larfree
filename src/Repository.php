@@ -28,7 +28,7 @@ abstract class Repository
      */
     protected $query;
 
-    protected const ERROR_MESSAGE_DATABASE_SAVE_FAILED = '数据异常！该数据不存在或已删除。';
+    protected const ERROR_MESSAGE_DATABASE_SAVE_FAILED = '服务异常！数据保存失败，请重试。';
 
     protected const ERROR_MESSAGE_MODEL_NOT_FOUND = '数据异常！该数据不存在或已删除。';
 
