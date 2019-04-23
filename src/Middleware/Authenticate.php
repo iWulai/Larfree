@@ -3,7 +3,6 @@
 namespace Larfree\Middleware;
 
 use Closure;
-use Larfree\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Larfree\Exceptions\AuthenticationExpired;
@@ -17,7 +16,7 @@ class Authenticate
      * @param Request $request
      * @param Closure $next
      *
-     * @return ApiResponse
+     * @return \Larfree\ApiResponse
      *
      * @throws AuthenticationExpired
      * @throws UnauthorizedException
