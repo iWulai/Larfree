@@ -8,7 +8,7 @@ return [
 
         'user_id' => env('LARFREE_AUTH_USER_ID', null),
 
-        'model' => Larfree\Auth\UserAuth::class,
+        'model' => Larfree\Auth\JWTAuthModel::class,
 
     ],
 

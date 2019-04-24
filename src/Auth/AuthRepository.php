@@ -12,15 +12,22 @@ class AuthRepository extends Repository
     protected $columns = ['password'];
 
     /**
-     * @var UserAuth
+     * @var JWTAuthModel
      */
     protected $model;
 
+    /**
+     * AuthRepository constructor.
+     * @throws \Exception
+     */
     public function __construct()
     {
-        $model = ($model = Config::get('larfree.auth.model')) ? new $model() : new UserAuth();
+        if (! $model = Config::get('larfree.auth.model'))
+        {
+            throw new \Exception('Not Found The Larfree Auth Model', 500);
+        }
 
-        parent::__construct($model);
+        parent::__construct(new $model);
     }
 
     public function setLoginColumn(string $column)
