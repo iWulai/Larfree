@@ -1,7 +1,6 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\{Route, Config};
 
 $route = Route::middleware('api');
 
