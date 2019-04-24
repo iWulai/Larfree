@@ -32,11 +32,11 @@ class Authenticate
 
                 try
                 {
-                    $auth->parseToken();
+                    $auth->parseToken()->invalidate();
                 }
                 catch (\Exception $exception)
                 {
-
+                    dd($exception->getMessage(), get_class($exception), '---------------------------------------------');
                 }
             }
 
