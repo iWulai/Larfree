@@ -6,7 +6,7 @@ use Larfree\ApiResponse;
 
 class UnauthorizedException extends ApiException
 {
-    protected $message = '认证异常！未登录。';
+    protected $message = '认证异常！';
 
     protected $status = ApiResponse::HTTP_UNAUTHORIZED;
 
