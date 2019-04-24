@@ -9,22 +9,23 @@ use Larfree\Exceptions\ApiErrorException;
 
 class AuthRepository extends Repository
 {
-    protected $columns = ['id', 'password'];
+    protected $columns = ['password'];
 
-    protected $loginColumn;
+    /**
+     * @var UserAuth
+     */
+    protected $model;
 
     public function __construct()
     {
         $model = ($model = Config::get('larfree.auth.model')) ? new $model() : new UserAuth();
-
-        $this->loginColumn = Config::get('larfree.auth.login_column');
 
         parent::__construct($model);
     }
 
     public function setLoginColumn(string $column)
     {
-        $this->loginColumn = $column;
+        $this->model->setLoginColumn($column);
 
         return $this;
     }
@@ -41,7 +42,7 @@ class AuthRepository extends Repository
      */
     public function login(string $value, string $password)
     {
-        $user = $this->where($this->loginColumn, $value)->orderByDesc('created_at')->first();
+        $user = $this->where($this->model->getLoginColumn(), $value)->orderByDesc('created_at')->first();
 
         if (is_null($user) || ! password_verify($password, $user->getAttributeValue('password')))
         {

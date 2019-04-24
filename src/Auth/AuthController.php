@@ -4,7 +4,6 @@ namespace Larfree\Auth;
 
 use Larfree\Controller;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Config;
 
 class AuthController extends Controller
 {
@@ -12,14 +11,14 @@ class AuthController extends Controller
         'loginUsePhone' => [
             'rules' => [
                 'username' => 'bail|required|cellphone',
-                'password' => 'bail|required|password',
+                'password' => 'bail|required|between:3,18|password',
             ],
             'messages' => [],
         ],
         'loginUseEmail' => [
             'rules' => [
                 'username' => 'bail|required|email',
-                'password' => 'bail|required|password',
+                'password' => 'bail|required|between:3,18|password',
             ],
             'messages' => [],
         ],
@@ -28,10 +27,6 @@ class AuthController extends Controller
     public function __construct(AuthRepository $repository)
     {
         $this->repository = $repository;
-
-        $this->validator['loginUsePhone']['messages'] = Config::get('larfree.auth.validator_messages.phone');
-
-        $this->validator['loginUseEmail']['messages'] = Config::get('larfree.auth.validator_messages.email');
     }
 
     public function logout()

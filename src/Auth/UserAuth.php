@@ -9,6 +9,20 @@ class UserAuth extends AuthModel implements JWTSubject
 {
     protected $table = 'users';
 
+    protected $loginColumn = 'cellphone';
+
+    public function setLoginColumn(string $column)
+    {
+        $this->loginColumn = $column;
+
+        return $this;
+    }
+
+    public function getLoginColumn()
+    {
+        return $this->loginColumn;
+    }
+
     public function getJWTIdentifier()
     {
         return $this->getKey();
