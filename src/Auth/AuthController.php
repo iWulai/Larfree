@@ -16,7 +16,7 @@ class AuthController extends Controller
             ],
             'messages' => [],
         ],
-        'loginUseEmail1' => [
+        'loginUseEmail' => [
             'rules' => [
                 'username' => 'bail|required|email',
                 'password' => 'bail|required|password',
