@@ -8,6 +8,7 @@ use Larfree\Console\LarfreeMakeCommand;
 use Illuminate\Support\ServiceProvider;
 use Larfree\Console\RepositoryMakeCommand;
 use Larfree\Console\ControllerMakeCommand;
+use Larfree\Middleware\FormatResponse;
 
 class LarfreeServiceProvider extends ServiceProvider
 {
@@ -40,6 +41,8 @@ class LarfreeServiceProvider extends ServiceProvider
          * @var \Illuminate\Routing\Router $router
          */
         $router = $this->app['router'];
+
+        $router->middleware(FormatResponse::class);
 
         $router->aliasMiddleware('larfree.auth', Authenticate::class);
 
