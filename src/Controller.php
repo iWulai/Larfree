@@ -51,7 +51,7 @@ abstract class Controller extends BaseController
      * @param string $method
      * @param array  $parameters
      *
-     * @return mixed|\Symfony\Component\HttpFoundation\Response
+     * @return \Symfony\Component\HttpFoundation\Response
      *
      * @throws Exceptions\ApiErrorException
      * @throws ValidateException
