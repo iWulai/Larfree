@@ -52,18 +52,4 @@ class AuthRepository extends Repository
 
         return $user;
     }
-
-    /**
-     * @author iwulai
-     *
-     * @param int $id
-     *
-     * @return \Larfree\Model
-     *
-     * @throws ApiErrorException
-     */
-    public function findUser(int $id)
-    {
-        return $this->find($id);
-    }
 }

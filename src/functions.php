@@ -18,11 +18,11 @@ if (! function_exists('auth_user_id'))
     {
         if (is_null($userId))
         {
-            $userId = Auth::id() ?: Config::get('larfree.auth.user_id', null);
+            $userId = Auth::guard()->id() ?: Config::get('larfree.auth.user_id', null);
         }
         else
         {
-            if ($user = (new AuthRepository())->findUser($userId))
+            if ($user = (new AuthRepository())->find($userId))
             {
                 Auth::guard()->login($user);
             }

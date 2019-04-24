@@ -3,9 +3,8 @@
 namespace Larfree\Middleware;
 
 use Closure;
+use Larfree\ApiResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\App;
-use Larfree\Exceptions\AuthExpiredException;
 use Larfree\Exceptions\UnauthorizedException;
 
 class Authenticate
@@ -16,32 +15,15 @@ class Authenticate
      * @param Request $request
      * @param Closure $next
      *
-     * @return mixed
+     * @return ApiResponse
      *
-     * @throws AuthExpiredException
      * @throws UnauthorizedException
+     * @throws \Larfree\Exceptions\ApiErrorException
      */
     public function handle(Request $request, Closure $next)
     {
         if (! auth_user_id())
         {
-            if (($app = App::getFacadeApplication()) && $app->has('tymon.jwt.auth'))
-            {
-                /**
-                 * @var \Tymon\JWTAuth\JWT $auth
-                 */
-                $auth = $app->get('tymon.jwt.auth');
-
-                try
-                {
-                    $auth->parseToken()->invalidate();
-                }
-                catch (\Exception $exception)
-                {
-                    throw new AuthExpiredException();
-                }
-            }
-
             throw new UnauthorizedException();
         }
 

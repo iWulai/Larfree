@@ -18,25 +18,25 @@ return [
 
             'phone' => [
 
-//                'username.required' => '',
-//
-//                'username.cellphone' => '',
-//
-//                'password.required' => '',
-//
-//                'password.password' => '',
+                'username.required' => '手机号码必填！',
+
+                'username.cellphone' => '手机号码格式错误！',
+
+                'password.required' => '密码必填！',
+
+                'password.password' => '密码只允许数字或字母！',
 
             ],
 
             'email' => [
 
-//                'username.required' => '',
-//
-//                'username.email' => '',
-//
-//                'password.required' => '',
-//
-//                'password.password' => '',
+                'username.required' => '邮箱地址格式错误！',
+
+                'username.email' => '邮箱地址格式错误！',
+
+                'password.required' => '密码必填！',
+
+                'password.password' => '密码只允许数字或字母！',
 
             ],
 
@@ -46,7 +46,7 @@ return [
 
     'route' => [
 
-        'prefix' => null,
+        'prefix' => 'api',
 
     ],
 
