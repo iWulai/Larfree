@@ -4,6 +4,7 @@ namespace Larfree\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Larfree\Exceptions\UnauthorizedException;
 
 class Authenticate
@@ -22,6 +23,23 @@ class Authenticate
     {
         if (! auth_user_id())
         {
+            if (($app = App::getFacadeApplication()) && $app->has('tymon.jwt.auth'))
+            {
+                /**
+                 * @var \Tymon\JWTAuth\JWT $auth
+                 */
+                $auth = $app->get('tymon.jwt.auth');
+
+                try
+                {
+                    $auth->parseToken();
+                }
+                catch (\Exception $exception)
+                {
+
+                }
+            }
+
             throw new UnauthorizedException();
         }
 

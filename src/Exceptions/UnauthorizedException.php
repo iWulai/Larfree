@@ -9,4 +9,6 @@ class UnauthorizedException extends ApiException
     protected $message = '认证异常！未登录。';
 
     protected $status = ApiResponse::HTTP_UNAUTHORIZED;
+
+    protected $code = 40101;
 }

@@ -12,7 +12,7 @@ if (! function_exists('auth_user_id'))
         }
         else
         {
-            Config::set('larfree.auth.user_id', $userId);
+            Auth::login();
         }
 
         return intval($userId);
