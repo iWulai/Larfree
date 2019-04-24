@@ -2,14 +2,30 @@
 
 namespace Larfree\Providers;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Validator;
 
 class ValidatorServiceProvider extends ServiceProvider
 {
-    protected $cellphoneRegex = '/^1[3456789][0-9]{9}$/';
-
-    protected $telephoneRegex = '/(^(0[0-9]{2}-?)([2-9][0-9]{7})(-[0-9]{1,4})?$)|(^(0[0-9]{3}-?)([2-9][0-9]{6})(-[0-9]{1,4})?$)|(^400(-?[0-9]{3,4}){2}$)/';
+    protected const VALIDATORS = [
+        'cellphone' => [
+            'regex' => '/^1[3456789][0-9]{9}$/',
+            'message' => 'The :attribute must be a valid cellphone number.',
+        ],
+        'telephone' => [
+            'regex' => '/(^(0[0-9]{2}-?)([2-9][0-9]{7})(-[0-9]{1,4})?$)|(^(0[0-9]{3}-?)([2-9][0-9]{6})(-[0-9]{1,4})?$)|(^400(-?[0-9]{3,4}){2}$)/',
+            'message' => 'The :attribute must be a valid telephone number.',
+        ],
+        'phone' => [
+            'regex' => '/(^1[3456789][0-9]{9}$)|((^(0[0-9]{2}-?)([2-9][0-9]{7})(-[0-9]{1,4})?$)|(^(0[0-9]{3}-?)([2-9][0-9]{6})(-[0-9]{1,4})?$)|(^400(-?[0-9]{3,4}){2}$))/',
+            'message' => 'The :attribute must be a valid phone number.',
+        ],
+        'password' => [
+            'regex' => '/^[a-zA-Z0-9]{3,18}$/',
+            'message' => 'The :attribute may only contain letters and numbers.',
+        ],
+    ];
 
     /**
      * Bootstrap services.
@@ -18,60 +34,35 @@ class ValidatorServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->cellphone();
-
-        $this->telephone();
-
-        $this->phone();
+        $this->registerValidator();
     }
 
-    protected function cellphone()
+    protected function registerValidator()
     {
-        Validator::extend('cellphone', function ($attribute, $value, $parameters, $validator)
+        foreach (static::VALIDATORS as $attribute => $validator)
+        {
+            if ($regex = Arr::get($validator, 'regex'))
             {
-                return !! preg_match($this->cellphoneRegex, $value);
+                Validator::extend($attribute, function ($attribute, $value, $parameters, $validator) use ($regex)
+                    {
+                        return !! preg_match($regex, $value);
+                    }
+                );
             }
-        );
 
-        Validator::replacer('cellphone', function ($message, $attribute, $rule, $parameters)
+            if ($default = Arr::get($validator, 'message'))
             {
-                return $message === 'validation.' . $rule ? '手机号码格式错误！请填写正确的手机号码。' : $message;
+                Validator::replacer($attribute, function ($message, $attribute, $rule, $parameters) use ($default)
+                    {
+                        return $this->getMessage($message, $rule, str_replace(':attribute', $attribute, $default));
+                    }
+                );
             }
-        );
+        }
     }
 
-    protected function telephone()
+    protected function getMessage(string $message, string $rule, string $default)
     {
-        Validator::extend('telephone', function ($attribute, $value, $parameters, $validator)
-            {
-                return !! preg_match($this->telephoneRegex, $value);
-            }
-        );
-
-        Validator::replacer('telephone', function ($message, $attribute, $rule, $parameters)
-            {
-                return $message === 'validation.' . $rule ? '座机号码格式错误！请填写正确的座机号码（分机号）或400电话。' : $message;
-            }
-        );
-    }
-
-    protected function phone()
-    {
-        Validator::extend('phone', function ($attribute, $value, $parameters, $validator)
-            {
-                if (preg_match($this->cellphoneRegex, $value))
-                {
-                    return true;
-                }
-
-                return !! preg_match($this->telephoneRegex, $value);
-            }
-        );
-
-        Validator::replacer('phone', function ($message, $attribute, $rule, $parameters)
-            {
-                return $message === 'validation.' . $rule ? '电话号码格式错误！请填写正确的电话号码。允许手机号码，座机号码（分机号），400号码' : $message;
-            }
-        );
+        return $message === 'validation.' . $rule ? $default : $message;
     }
 }

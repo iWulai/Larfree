@@ -5,6 +5,7 @@ namespace Larfree\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
+use Larfree\Exceptions\AuthExpiredException;
 use Larfree\Exceptions\UnauthorizedException;
 
 class Authenticate
@@ -15,8 +16,9 @@ class Authenticate
      * @param Request $request
      * @param Closure $next
      *
-     * @return \Larfree\ApiResponse
+     * @return mixed
      *
+     * @throws AuthExpiredException
      * @throws UnauthorizedException
      */
     public function handle(Request $request, Closure $next)
@@ -36,7 +38,7 @@ class Authenticate
                 }
                 catch (\Exception $exception)
                 {
-                    dd($exception->getMessage(), get_class($exception), '---------------------------------------------');
+                    throw new AuthExpiredException();
                 }
             }
 

@@ -6,5 +6,5 @@ use Larfree\AuthModel;
 
 class UserAuth extends AuthModel
 {
-
+    protected $table = 'common_user';
 }
