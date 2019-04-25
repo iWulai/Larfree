@@ -9,7 +9,7 @@ use Larfree\Exceptions\ApiErrorException;
 
 class AuthRepository extends Repository
 {
-    protected $columns = ['password'];
+    protected $columns = ['id', 'password'];
 
     /**
      * @var JWTAuthModel
