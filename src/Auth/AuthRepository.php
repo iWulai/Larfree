@@ -60,4 +60,9 @@ class AuthRepository extends Repository
 
         return $user;
     }
+
+    public function logout()
+    {
+        return Auth::guard()->logout();
+    }
 }
