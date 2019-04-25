@@ -1,6 +1,7 @@
 <?php
 
 use Larfree\Auth\AuthRepository;
+use Larfree\Exceptions\UnauthorizedException;
 use Illuminate\Support\Facades\{Auth, Config};
 
 if (! function_exists('auth_user_id'))
@@ -26,6 +27,10 @@ if (! function_exists('auth_user_id'))
             if ($user = (new AuthRepository())->find($userId))
             {
                 Auth::guard()->login($user);
+            }
+            else
+            {
+                throw new UnauthorizedException('认证异常！未注册。', 40100);
             }
         }
 

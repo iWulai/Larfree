@@ -63,6 +63,8 @@ class AuthRepository extends Repository
 
     public function logout()
     {
-        return Auth::guard()->logout();
+        Auth::guard()->logout();
+
+        return '退出登录成功';
     }
 }

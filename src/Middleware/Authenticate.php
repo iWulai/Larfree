@@ -22,10 +22,12 @@ class Authenticate
      */
     public function handle(Request $request, Closure $next)
     {
-        if (! auth_user_id())
+        if (! $userId = auth_user_id())
         {
             throw new UnauthorizedException();
         }
+
+        auth_user_id($userId);
 
         return $next($request);
     }
