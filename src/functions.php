@@ -13,6 +13,7 @@ if (! function_exists('auth_user_id'))
      * @return int
      *
      * @throws \Larfree\Exceptions\ApiErrorException
+     * @throws \Exception
      */
     function auth_user_id(int $userId = null)
     {
