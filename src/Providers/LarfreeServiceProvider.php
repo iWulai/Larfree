@@ -42,5 +42,7 @@ class LarfreeServiceProvider extends ServiceProvider
         $router = $this->app['router'];
 
         $router->aliasMiddleware('larfree.auth', Authenticate::class);
+
+        $this->loadRoutesFrom(__DIR__ . '/../routes/auth.php');
     }
 }

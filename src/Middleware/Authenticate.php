@@ -3,6 +3,7 @@
 namespace Larfree\Middleware;
 
 use Closure;
+use Larfree\ApiResponse;
 use Illuminate\Http\Request;
 use Larfree\Exceptions\UnauthorizedException;
 
@@ -14,9 +15,10 @@ class Authenticate
      * @param Request $request
      * @param Closure $next
      *
-     * @return \Larfree\ApiResponse
+     * @return ApiResponse
      *
      * @throws UnauthorizedException
+     * @throws \Larfree\Exceptions\ApiErrorException
      */
     public function handle(Request $request, Closure $next)
     {

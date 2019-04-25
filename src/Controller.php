@@ -52,6 +52,8 @@ abstract class Controller extends BaseController
      * @param array  $parameters
      *
      * @return \Symfony\Component\HttpFoundation\Response
+     *
+     * @throws Exceptions\ApiErrorException
      * @throws ValidateException
      * @throws \Illuminate\Validation\ValidationException
      */
