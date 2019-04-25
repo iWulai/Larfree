@@ -9,5 +9,5 @@ abstract class AuthModel extends Model implements Authenticate
 {
     use Authenticatable;
 
-    protected $hidden = ['password'];
+    protected $hidden = ['id', 'password'];
 }
