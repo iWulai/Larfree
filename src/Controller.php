@@ -61,7 +61,7 @@ abstract class Controller extends BaseController
     {
         $request = BaseRequest::instance();
 
-        $this->paginator = Paginator::make($request->get('per_page', $request->get('page')));
+        $this->paginator = Paginator::make($request->query('per_page'), $request->query('page'));
 
         if (isset($this->validator[$method]) || in_array($method, $this->validator))
         {
