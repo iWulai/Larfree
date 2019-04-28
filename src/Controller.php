@@ -78,8 +78,14 @@ abstract class Controller extends BaseController
                 throw new ValidateException($validator);
             }
 
-            $this->request = Request::make($validator->validated());
+            $data = $validator->validated();
         }
+        else
+        {
+            $data = [];
+        }
+
+        $this->request = Request::make($data);
 
         $this->userId = auth_user_id();
 
