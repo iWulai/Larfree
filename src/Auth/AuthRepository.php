@@ -18,7 +18,9 @@ class AuthRepository extends Repository
 
     public function __construct()
     {
-        parent::__construct(new (Config::get('larfree.auth.model'))());
+        $model = Config::get('larfree.auth.model');
+
+        parent::__construct(new $model());
     }
 
     public function getUserById(int $id)
