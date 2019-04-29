@@ -16,18 +16,14 @@ class AuthRepository extends Repository
      */
     protected $model;
 
-    /**
-     * AuthRepository constructor.
-     * @throws \Exception
-     */
     public function __construct()
     {
-        if (! $model = Config::get('larfree.auth.model'))
-        {
-            throw new \Exception('Not Found The Larfree Auth Model', 500);
-        }
+        parent::__construct(new (Config::get('larfree.auth.model'))());
+    }
 
-        parent::__construct(new $model);
+    public function getUserById(int $id)
+    {
+        return $this->query->find($id);
     }
 
     public function setLoginColumn(string $column)

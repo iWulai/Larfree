@@ -53,9 +53,7 @@ abstract class Controller extends BaseController
      *
      * @return \Symfony\Component\HttpFoundation\Response
      *
-     * @throws Exceptions\ApiErrorException
-     * @throws ValidateException
-     * @throws \Illuminate\Validation\ValidationException
+     * @throws
      */
     public function callAction($method, $parameters)
     {
