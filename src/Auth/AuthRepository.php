@@ -20,7 +20,7 @@ class AuthRepository extends Repository
     {
         $model = Config::get('larfree.auth.model');
 
-        parent::__construct(new $model());
+        if ($model) parent::__construct(new $model());
     }
 
     public function getUserById(int $id)
