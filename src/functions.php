@@ -20,7 +20,7 @@ if (! function_exists('auth_user_id'))
         }
         else
         {
-            if ($user = (new AuthRepository())->getUserById($userId))
+            if ($user = (new AuthRepository())->find($userId))
             {
                 Auth::guard()->login($user);
             }

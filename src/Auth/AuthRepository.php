@@ -23,11 +23,6 @@ class AuthRepository extends Repository
         if ($model) parent::__construct(new $model());
     }
 
-    public function getUserById(int $id)
-    {
-        return $this->query->find($id);
-    }
-
     public function setLoginColumn(string $column)
     {
         $this->model->setLoginColumn($column);
@@ -51,7 +46,7 @@ class AuthRepository extends Repository
 
         if (is_null($user) || ! password_verify($password, $user->getAttributeValue('password')))
         {
-            throw new ApiErrorException('认证错误！账号或密码错误。');
+            throw new ApiErrorException('认证错误！账号或密码错误，请确认。');
         }
 
         $user->setAttribute('token', Auth::guard()->login($user));
