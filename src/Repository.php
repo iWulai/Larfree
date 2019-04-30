@@ -136,27 +136,42 @@ abstract class Repository
     /**
      * @author iwulai
      *
-     * @param int  $id
-     * @param bool $return
+     * @param int $id
      *
-     * @return $this|Model
-     *
-     * @throws ApiErrorException
+     * @return Model
      */
-    public function find(int $id, bool $return = true)
+    public function find(int $id)
     {
         /**
          * @var Model $model
          */
         $model = $this->query->find($id);
 
-        $instanceof = $model instanceof Model;
+        if ($model instanceof Model)
+        {
+            $this->model = $model;
+        }
 
-        if ($instanceof) $this->model = $model;
+        return $model;
+    }
 
-        if ($return) return $model;
+    /**
+     * @author iwulai
+     *
+     * @param int $id
+     *
+     * @return $this
+     *
+     * @throws ApiErrorException
+     */
+    public function has(int $id)
+    {
+        $model = $this->find($id);
 
-        if (! $instanceof) $this->notFound();
+        if (is_null($model))
+        {
+            $this->notFound();
+        }
 
         return $this;
     }
@@ -212,9 +227,15 @@ abstract class Repository
             $this->notFound();
         }
 
-        if (! $model->delete())
+        try
         {
-            $this->saveFailed();
+            if (! $model->delete())
+            {
+                $this->saveFailed();
+            }
+        } catch (\Exception $exception)
+        {
+            $this->retry();
         }
 
         $this->model = $model;
@@ -437,6 +458,20 @@ abstract class Repository
     public function throw(string $message, int $status = null)
     {
         throw new ApiErrorException($message, $status);
+    }
+
+    /**
+     * @author iwulai
+     *
+     * @return $this
+     *
+     * @throws ApiErrorException
+     */
+    public function retry()
+    {
+        $this->throw('执行异常！操作失败，请重试。');
+
+        return $this;
     }
 
     /**
