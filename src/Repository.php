@@ -164,7 +164,7 @@ abstract class Repository
      *
      * @throws ApiErrorException
      */
-    public function has(int $id)
+    public function exists(int $id)
     {
         $model = $this->find($id);
 

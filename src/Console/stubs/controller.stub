@@ -71,7 +71,7 @@ class DummyClass extends Controller
      */
     public function update(int $id)
     {
-        return $this->repository->has($id)->save($this->request->all());
+        return $this->repository->exists($id)->save($this->request->all());
     }
 
     /**
